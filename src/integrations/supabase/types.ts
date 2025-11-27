@@ -20,6 +20,8 @@ export interface AIAnalysis {
   speakableSummary?: string;
   documentId?: string;
   analysisSource?: 'gemini-ai' | 'local' | 'edge-function';
+  suggestedTags?: string[];  // AI-suggested tags
+  suggestedFolder?: string;  // AI-suggested folder
 }
 
 export interface Tag {
@@ -28,6 +30,17 @@ export interface Tag {
   name: string;
   color: string;
   created_at?: string | null;
+}
+
+export interface Folder {
+  id: string;
+  user_id: string;
+  name: string;
+  color: string;
+  icon: string;
+  parent_id: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface DocumentTag {
@@ -50,6 +63,8 @@ export interface Document {
   ai_analysis: AIAnalysis | null;
   shared: boolean | null;
   share_token: string | null;
+  folder_id: string | null;
+  suggested_tags: string[] | null;
   created_at: string | null;
   updated_at: string | null;
 }

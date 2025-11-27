@@ -188,22 +188,24 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-6">
-          {/* Welcome Section */}
-          <Card className="p-6 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
-            <h2 className="text-2xl font-bold mb-2">Welcome to Document Assistant</h2>
-            <p className="text-muted-foreground">
-              Upload your documents (PDFs or images) and we'll extract the text, 
-              identify the document type, and help you understand what actions to take.
-            </p>
-          </Card>
+          {/* Welcome Section - Hide when viewing History or Analytics */}
+          {!showHistory && !showDashboard && (
+            <Card className="p-6 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+              <h2 className="text-2xl font-bold mb-2">Welcome to Document Assistant</h2>
+              <p className="text-muted-foreground">
+                Upload your documents (PDFs or images) and we'll extract the text, 
+                identify the document type, and help you understand what actions to take.
+              </p>
+            </Card>
+          )}
 
           {/* Dashboard Section */}
           {showDashboard && documents.length > 0 && (
             <Dashboard documents={documents} />
           )}
 
-          {/* Upload Section */}
-          {!showDashboard && (
+          {/* Upload Section - Hide when viewing History or Analytics */}
+          {!showDashboard && !showHistory && (
             <DocumentUpload
               onTextExtracted={handleTextExtracted}
               isProcessing={isProcessing}
@@ -222,7 +224,7 @@ const Index = () => {
           )}
 
           {/* Results Section */}
-          {extractedText && !showDashboard && (
+          {extractedText && !showDashboard && !showHistory && (
             <ExtractedTextDisplay
               text={extractedText}
               documentType={documentType}

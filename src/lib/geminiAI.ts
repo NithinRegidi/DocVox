@@ -12,6 +12,8 @@ export interface GeminiAnalysis {
   urgency: 'high' | 'medium' | 'low';
   category: string;
   speakableSummary: string;
+  suggestedTags: string[];
+  suggestedFolder: string;
 }
 
 // Get API key from environment
@@ -95,7 +97,15 @@ Respond with a JSON object (no markdown, no code blocks):
   ],
   "urgency": "high if there are deadlines within 7 days or overdue items, medium if within 30 days, low otherwise",
   "category": "Financial, Legal, Medical, Personal, Business, Government, Education, or Insurance",
-  "speakableSummary": "Write a natural sentence like: This is a [type] from [company] dated [date], regarding [main topic]. The total amount is [amount] and it is due by [date]."
+  "speakableSummary": "Write a natural sentence like: This is a [type] from [company] dated [date], regarding [main topic]. The total amount is [amount] and it is due by [date].",
+  "suggestedTags": [
+    "Suggest 3-6 relevant tags for organizing this document, such as:",
+    "bill", "invoice", "receipt", "bank", "insurance", "medical", "prescription",
+    "legal", "contract", "tax", "employment", "salary", "utility", "electricity",
+    "water", "gas", "phone", "internet", "rent", "mortgage", "loan", "credit-card",
+    "education", "certificate", "id-proof", "passport", "license", "urgent", "important"
+  ],
+  "suggestedFolder": "Suggest ONE folder from: Bills, Medical, Legal, Financial, Personal, Work, Government, Insurance, Education, Receipts"
 }
 
 IMPORTANT: Replace all placeholder text with ACTUAL data from the document. If information is not found, omit that field or write "Not specified in document".`;
@@ -228,6 +238,8 @@ function parseGeminiResponse(response: string): GeminiAnalysis | null {
       urgency: validateUrgency(parsed.urgency),
       category: parsed.category || 'General',
       speakableSummary: parsed.speakableSummary || parsed.summary || '',
+      suggestedTags: Array.isArray(parsed.suggestedTags) ? parsed.suggestedTags : [],
+      suggestedFolder: parsed.suggestedFolder || 'Personal',
     };
   } catch (error) {
     console.error('JSON parse error:', error);

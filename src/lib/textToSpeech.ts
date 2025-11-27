@@ -1,19 +1,58 @@
 // Text-to-Speech utility using Web Speech API
+// Supports multiple languages including Indian regional languages
 
 export interface SpeechOptions {
   rate?: number;      // 0.1 to 10, default 1
   pitch?: number;     // 0 to 2, default 1
   volume?: number;    // 0 to 1, default 1
   voice?: SpeechSynthesisVoice | null;
+  lang?: string;      // Language code (e.g., 'hi-IN', 'ta-IN')
 }
+
+// Supported languages with display names
+export interface LanguageOption {
+  code: string;
+  name: string;
+  nativeName: string;
+  flag: string;
+}
+
+export const SUPPORTED_LANGUAGES: LanguageOption[] = [
+  { code: 'en-US', name: 'English (US)', nativeName: 'English', flag: '🇺🇸' },
+  { code: 'en-GB', name: 'English (UK)', nativeName: 'English', flag: '🇬🇧' },
+  { code: 'en-IN', name: 'English (India)', nativeName: 'English', flag: '🇮🇳' },
+  { code: 'hi-IN', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'ta-IN', name: 'Tamil', nativeName: 'தமிழ்', flag: '🇮🇳' },
+  { code: 'te-IN', name: 'Telugu', nativeName: 'తెలుగు', flag: '🇮🇳' },
+  { code: 'kn-IN', name: 'Kannada', nativeName: 'ಕನ್ನಡ', flag: '🇮🇳' },
+  { code: 'ml-IN', name: 'Malayalam', nativeName: 'മലയാളം', flag: '🇮🇳' },
+  { code: 'mr-IN', name: 'Marathi', nativeName: 'मराठी', flag: '🇮🇳' },
+  { code: 'gu-IN', name: 'Gujarati', nativeName: 'ગુજરાતી', flag: '🇮🇳' },
+  { code: 'bn-IN', name: 'Bengali', nativeName: 'বাংলা', flag: '🇮🇳' },
+  { code: 'pa-IN', name: 'Punjabi', nativeName: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+  { code: 'es-ES', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
+  { code: 'fr-FR', name: 'French', nativeName: 'Français', flag: '🇫🇷' },
+  { code: 'de-DE', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
+  { code: 'ja-JP', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },
+  { code: 'zh-CN', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
+  { code: 'ar-SA', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦' },
+];
 
 class TextToSpeechManager {
   private synth: SpeechSynthesis;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
   private isPaused: boolean = false;
+  private selectedLanguage: string = 'en-US';
+  private voicesLoaded: boolean = false;
 
   constructor() {
     this.synth = window.speechSynthesis;
+    // Load voices when they become available
+    if (this.synth.onvoiceschanged !== undefined) {
+      this.synth.onvoiceschanged = () => {
+        this.voicesLoaded = true;
+      };
+    }
   }
 
   /**
@@ -28,6 +67,49 @@ class TextToSpeechManager {
    */
   getVoices(): SpeechSynthesisVoice[] {
     return this.synth.getVoices();
+  }
+
+  /**
+   * Get voices for a specific language
+   */
+  getVoicesForLanguage(langCode: string): SpeechSynthesisVoice[] {
+    const voices = this.getVoices();
+    // Match language code (e.g., 'hi-IN' or just 'hi')
+    const langPrefix = langCode.split('-')[0];
+    return voices.filter(voice => 
+      voice.lang === langCode || 
+      voice.lang.startsWith(langPrefix + '-') ||
+      voice.lang === langPrefix
+    );
+  }
+
+  /**
+   * Get available languages (that have voices)
+   */
+  getAvailableLanguages(): LanguageOption[] {
+    const voices = this.getVoices();
+    return SUPPORTED_LANGUAGES.filter(lang => {
+      const langPrefix = lang.code.split('-')[0];
+      return voices.some(voice => 
+        voice.lang === lang.code || 
+        voice.lang.startsWith(langPrefix + '-') ||
+        voice.lang === langPrefix
+      );
+    });
+  }
+
+  /**
+   * Set the current language
+   */
+  setLanguage(langCode: string): void {
+    this.selectedLanguage = langCode;
+  }
+
+  /**
+   * Get the current language
+   */
+  getLanguage(): string {
+    return this.selectedLanguage;
   }
 
   /**
@@ -57,13 +139,36 @@ class TextToSpeechManager {
       utterance.pitch = options.pitch ?? 1;
       utterance.volume = options.volume ?? 1;
       
-      // Set voice (use first English voice if available)
+      // Determine language to use
+      const langToUse = options.lang || this.selectedLanguage;
+      
+      // Log the selected language for debugging
+      console.log('🗣️ TTS Language Selected:', langToUse);
+      console.log('🗣️ Available voices for this language:', this.getVoicesForLanguage(langToUse).map(v => v.name));
+      
+      // Set the language on the utterance FIRST
+      utterance.lang = langToUse;
+      
+      // Set voice based on language
       if (options.voice) {
         utterance.voice = options.voice;
+        console.log('🗣️ Using provided voice:', options.voice.name);
       } else {
-        const englishVoices = this.getEnglishVoices();
-        if (englishVoices.length > 0) {
-          utterance.voice = englishVoices[0];
+        // Find a voice for the selected language
+        const allVoices = this.getVoices();
+        const langVoices = this.getVoicesForLanguage(langToUse);
+        
+        if (langVoices.length > 0) {
+          // Prefer local voices over remote ones, then prefer Google/Microsoft voices
+          const preferredVoice = langVoices.find(v => v.localService && (v.name.includes('Google') || v.name.includes('Microsoft')))
+            || langVoices.find(v => v.localService)
+            || langVoices.find(v => v.name.includes('Google') || v.name.includes('Microsoft'))
+            || langVoices[0];
+          utterance.voice = preferredVoice;
+          console.log('🗣️ Using voice:', preferredVoice.name, 'for language:', langToUse);
+        } else {
+          console.log('⚠️ No voice found for language:', langToUse, '- browser will use default');
+          console.log('📋 All available voices:', allVoices.map(v => `${v.name} (${v.lang})`));
         }
       }
 
@@ -180,9 +285,35 @@ export function useTextToSpeech() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
+  const [selectedLanguage, setSelectedLanguage] = useState('en-US');
+  const [availableLanguages, setAvailableLanguages] = useState<LanguageOption[]>([]);
+  const [voicesReady, setVoicesReady] = useState(false);
 
   useEffect(() => {
     setIsSupported(tts.isSupported());
+    
+    // Always show all supported languages
+    // The browser will try to find a voice for the selected language
+    setAvailableLanguages(SUPPORTED_LANGUAGES);
+    
+    // Load voices
+    const loadVoices = () => {
+      const voices = tts.getVoices();
+      if (voices.length > 0) {
+        setVoicesReady(true);
+      }
+    };
+
+    // Voices might not be loaded immediately
+    loadVoices();
+    
+    // Also listen for voices changed event
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+    
+    // Retry loading voices after a delay (some browsers need this)
+    const timeout = setTimeout(loadVoices, 500);
     
     // Update state periodically while speaking
     const interval = setInterval(() => {
@@ -190,26 +321,35 @@ export function useTextToSpeech() {
       setIsPaused(tts.isPausedState());
     }, 100);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  const setLanguage = useCallback((langCode: string) => {
+    console.log('🌐 Language changed to:', langCode);
+    setSelectedLanguage(langCode);
+    tts.setLanguage(langCode);
   }, []);
 
   const speak = useCallback(async (text: string, options?: SpeechOptions) => {
     setIsSpeaking(true);
     try {
-      await tts.speak(text, options);
+      await tts.speak(text, { ...options, lang: options?.lang || selectedLanguage });
     } finally {
       setIsSpeaking(false);
     }
-  }, []);
+  }, [selectedLanguage]);
 
   const speakAnalysis = useCallback(async (analysis: Parameters<typeof tts.speakAnalysis>[0], options?: SpeechOptions) => {
     setIsSpeaking(true);
     try {
-      await tts.speakAnalysis(analysis, options);
+      await tts.speakAnalysis(analysis, { ...options, lang: options?.lang || selectedLanguage });
     } finally {
       setIsSpeaking(false);
     }
-  }, []);
+  }, [selectedLanguage]);
 
   const pause = useCallback(() => {
     tts.pause();
@@ -236,5 +376,9 @@ export function useTextToSpeech() {
     isSpeaking,
     isPaused,
     isSupported,
+    selectedLanguage,
+    setLanguage,
+    availableLanguages,
+    voicesReady,
   };
 }

@@ -9,7 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { exportToPDF } from "@/lib/pdfExport";
 import { supabase } from "@/integrations/supabase/client";
 import { AIAnalysis } from "@/integrations/supabase/types";
-import { useTextToSpeech } from "@/lib/textToSpeech";
+import { useCloudTTS } from "@/lib/cloudTTS";
+import LanguageSelector from "@/components/LanguageSelector";
 
 interface ExtractedTextDisplayProps {
   text: string;
@@ -26,7 +27,7 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
   const [isSharing, setIsSharing] = useState(false);
   const [shareLink, setShareLink] = useState<string>("");
   const [linkCopied, setLinkCopied] = useState(false);
-  const { speak, speakAnalysis, stop, pause, resume, isSpeaking, isPaused, isSupported } = useTextToSpeech();
+  const { speak, speakAnalysis, stop, pause, resume, isSpeaking, isPaused, isAvailable, selectedLanguage, setLanguage, availableLanguages } = useCloudTTS();
 
   const handleSpeak = async () => {
     if (isSpeaking && !isPaused) {
@@ -55,9 +56,10 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
         await speak(text.substring(0, 2000)); // Limit text length for speech
       }
     } catch (error) {
+      console.error('TTS Error:', error);
       toast({
         title: "Speech Error",
-        description: "Could not read the document aloud. Please try again.",
+        description: "Could not read the document aloud. Please check your API key or try again.",
         variant: "destructive",
       });
     }
@@ -429,41 +431,50 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
             </div>
           </div>
           <div className="flex gap-2 flex-wrap">
-            {/* Text-to-Speech Button */}
-            {isSupported && (
-              <div className="flex gap-1">
-                <Button
-                  onClick={handleSpeak}
-                  variant={isSpeaking ? "default" : "outline"}
-                  size="sm"
-                  className="gap-2"
-                >
-                  {isSpeaking && !isPaused ? (
-                    <>
-                      <Pause className="h-4 w-4" />
-                      Pause
-                    </>
-                  ) : isPaused ? (
-                    <>
-                      <Play className="h-4 w-4" />
-                      Resume
-                    </>
-                  ) : (
-                    <>
-                      <Volume2 className="h-4 w-4" />
-                      Listen
-                    </>
-                  )}
-                </Button>
-                {isSpeaking && (
+            {/* Text-to-Speech Button - Cloud TTS */}
+            {isAvailable && (
+              <div className="flex gap-2 items-center">
+                {/* Language Selector */}
+                <LanguageSelector
+                  selectedLanguage={selectedLanguage}
+                  onLanguageChange={setLanguage}
+                  availableLanguages={availableLanguages}
+                  disabled={isSpeaking}
+                />
+                <div className="flex gap-1">
                   <Button
-                    onClick={handleStopSpeaking}
-                    variant="outline"
+                    onClick={handleSpeak}
+                    variant={isSpeaking ? "default" : "outline"}
                     size="sm"
+                    className="gap-2"
                   >
-                    <VolumeX className="h-4 w-4" />
+                    {isSpeaking && !isPaused ? (
+                      <>
+                        <Pause className="h-4 w-4" />
+                        Pause
+                      </>
+                    ) : isPaused ? (
+                      <>
+                        <Play className="h-4 w-4" />
+                        Resume
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="h-4 w-4" />
+                        Listen
+                      </>
+                    )}
                   </Button>
-                )}
+                  {isSpeaking && (
+                    <Button
+                      onClick={handleStopSpeaking}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <VolumeX className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
             )}
             {!isSharedView && (
