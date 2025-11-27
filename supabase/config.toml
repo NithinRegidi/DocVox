@@ -1,0 +1,7 @@
+project_id = "kamyhhiakzpoernpfdsw"
+
+[functions.analyze-document]
+verify_jwt = true
+
+[functions.generate-share-token]
+verify_jwt = true
