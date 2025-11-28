@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { FileText, Copy, Check, AlertCircle, CheckCircle2, Clock, Download, Share2, Volume2, VolumeX, Pause, Play, Calendar, DollarSign, Mail, Phone, Hash, User, FileCheck, Lightbulb, Target, Shield, MessageCircle, Send } from "lucide-react";
+import { FileText, Copy, Check, AlertCircle, CheckCircle2, Clock, Download, Share2, Volume2, VolumeX, Pause, Play, Calendar, DollarSign, Mail, Phone, Hash, User, FileCheck, Lightbulb, Target, Shield, MessageCircle, Send, Languages, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { exportToPDF } from "@/lib/pdfExport";
@@ -12,6 +12,8 @@ import { AIAnalysis } from "@/integrations/supabase/types";
 import { useCloudTTS } from "@/lib/cloudTTS";
 import LanguageSelector from "@/components/LanguageSelector";
 import ReminderManager from "@/components/ReminderManager";
+import TranslationSelector from "@/components/TranslationSelector";
+import { translateText, translateAnalysis, getLanguageByCode, isTranslationAvailable, TranslatedAnalysis } from "@/lib/translation";
 
 interface ExtractedTextDisplayProps {
   text: string;
@@ -29,6 +31,77 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
   const [shareLink, setShareLink] = useState<string>("");
   const [linkCopied, setLinkCopied] = useState(false);
   const { speak, speakAnalysis, stop, pause, resume, isSpeaking, isPaused, isAvailable, selectedLanguage, setLanguage, availableLanguages } = useCloudTTS();
+
+  // Translation state
+  const [translationLanguage, setTranslationLanguage] = useState<string>("");
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translatedAnalysis, setTranslatedAnalysis] = useState<TranslatedAnalysis | null>(null);
+  const [translatedText, setTranslatedText] = useState<string>("");
+
+  // Handle translation
+  const handleTranslationChange = async (langCode: string) => {
+    setTranslationLanguage(langCode);
+    
+    if (!langCode) {
+      // Reset to original
+      setTranslatedAnalysis(null);
+      setTranslatedText("");
+      return;
+    }
+
+    setIsTranslating(true);
+    try {
+      const targetLang = getLanguageByCode(langCode);
+      
+      // Translate analysis if available
+      if (analysis) {
+        const translated = await translateAnalysis({
+          summary: analysis.summary,
+          explanation: analysis.explanation,
+          keyInformation: analysis.keyInformation,
+          suggestedActions: analysis.suggestedActions,
+          warnings: analysis.warnings,
+          speakableSummary: analysis.speakableSummary,
+        }, langCode);
+        setTranslatedAnalysis(translated);
+      }
+
+      // Translate extracted text (limit to first 3000 chars for performance)
+      if (text) {
+        const textToTranslate = text.length > 3000 ? text.substring(0, 3000) + '...' : text;
+        const translated = await translateText(textToTranslate, langCode);
+        setTranslatedText(translated);
+      }
+
+      toast({
+        title: "Translation Complete",
+        description: `Translated to ${targetLang?.name || langCode}`,
+      });
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast({
+        title: "Translation Failed",
+        description: "Could not translate. Please try again.",
+        variant: "destructive",
+      });
+      setTranslationLanguage("");
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  // Get displayed content (translated or original)
+  const displayedAnalysis = translatedAnalysis && translationLanguage ? {
+    ...analysis,
+    summary: translatedAnalysis.summary || analysis?.summary,
+    explanation: translatedAnalysis.explanation || analysis?.explanation,
+    keyInformation: translatedAnalysis.keyInformation?.length ? translatedAnalysis.keyInformation : analysis?.keyInformation,
+    suggestedActions: translatedAnalysis.suggestedActions?.length ? translatedAnalysis.suggestedActions : analysis?.suggestedActions,
+    warnings: translatedAnalysis.warnings?.length ? translatedAnalysis.warnings : analysis?.warnings,
+    speakableSummary: translatedAnalysis.speakableSummary || analysis?.speakableSummary,
+  } : analysis;
+
+  const displayedText = translatedText && translationLanguage ? translatedText : text;
 
   const handleSpeak = async () => {
     if (isSpeaking && !isPaused) {
@@ -366,6 +439,16 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                {/* Translation Badge */}
+                {translationLanguage && (
+                  <Badge 
+                    variant="outline"
+                    className="px-3 py-1 text-sm font-semibold bg-indigo-100 text-indigo-800 border-indigo-400 dark:bg-indigo-900 dark:text-indigo-200 dark:border-indigo-600"
+                  >
+                    <Languages className="h-3 w-3 mr-1" />
+                    {getLanguageByCode(translationLanguage)?.name}
+                  </Badge>
+                )}
                 {/* Analysis Source Badge */}
                 {analysis.analysisSource && (
                   <Badge 
@@ -427,13 +510,13 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
                 </div>
                 <div>
                   <h4 className="font-semibold text-base mb-2">📋 Summary</h4>
-                  <p className="text-sm leading-relaxed text-muted-foreground">{analysis.summary}</p>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{displayedAnalysis?.summary}</p>
                 </div>
               </div>
             </div>
 
             {/* Explanation Section */}
-            {analysis.explanation && (
+            {displayedAnalysis?.explanation && (
               <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950 dark:to-orange-950 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
                 <div className="flex items-start gap-3">
                   <div className="p-2 bg-amber-100 dark:bg-amber-900 rounded-lg shrink-0">
@@ -441,21 +524,21 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
                   </div>
                   <div>
                     <h4 className="font-semibold text-base mb-2">💡 What This Means For You</h4>
-                    <p className="text-sm leading-relaxed text-muted-foreground">{analysis.explanation}</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{displayedAnalysis.explanation}</p>
                   </div>
                 </div>
               </div>
             )}
 
             {/* Key Information Grid */}
-            {analysis.keyInformation && analysis.keyInformation.length > 0 && (
+            {displayedAnalysis?.keyInformation && displayedAnalysis.keyInformation.length > 0 && (
               <div>
                 <h4 className="font-semibold text-base mb-3 flex items-center gap-2">
                   <Target className="h-5 w-5 text-primary" />
                   Key Information Found
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {analysis.keyInformation.map((info: string, idx: number) => {
+                  {displayedAnalysis.keyInformation.map((info: string, idx: number) => {
                     // Determine icon based on content
                     const getInfoIcon = (text: string) => {
                       if (text.includes('📅') || text.toLowerCase().includes('date')) return <Calendar className="h-4 w-4 text-blue-500" />;
@@ -484,7 +567,7 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
             )}
 
             {/* Warnings Section */}
-            {analysis.warnings && analysis.warnings.length > 0 && (
+            {displayedAnalysis?.warnings && displayedAnalysis.warnings.length > 0 && (
               <div className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950 dark:to-rose-950 rounded-xl p-4 border-2 border-red-200 dark:border-red-800">
                 <div className="flex items-start gap-3">
                   <div className="p-2 bg-red-100 dark:bg-red-900 rounded-lg shrink-0">
@@ -493,7 +576,7 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
                   <div className="flex-1">
                     <h4 className="font-semibold text-base mb-3 text-red-700 dark:text-red-400">⚠️ Important Alerts</h4>
                     <ul className="space-y-2">
-                      {analysis.warnings.map((warning: string, idx: number) => (
+                      {displayedAnalysis.warnings.map((warning: string, idx: number) => (
                         <li key={idx} className="flex items-start gap-2 text-sm">
                           <span className="text-red-500 font-bold shrink-0">!</span>
                           <span className="text-red-700 dark:text-red-300 font-medium">{warning}</span>
@@ -506,7 +589,7 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
             )}
 
             {/* Action Steps */}
-            {analysis.suggestedActions && analysis.suggestedActions.length > 0 && (
+            {displayedAnalysis?.suggestedActions && displayedAnalysis.suggestedActions.length > 0 && (
               <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800">
                 <div className="flex items-start gap-3">
                   <div className="p-2 bg-emerald-100 dark:bg-emerald-900 rounded-lg shrink-0">
@@ -515,7 +598,7 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
                   <div className="flex-1">
                     <h4 className="font-semibold text-base mb-3 text-emerald-700 dark:text-emerald-400">✅ Recommended Actions</h4>
                     <ol className="space-y-3">
-                      {analysis.suggestedActions.map((action: string, idx: number) => (
+                      {displayedAnalysis.suggestedActions.map((action: string, idx: number) => (
                         <li key={idx} className="flex items-start gap-3">
                           <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold shrink-0">
                             {idx + 1}
@@ -555,6 +638,14 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
             </div>
           </div>
           <div className="flex gap-2 flex-wrap">
+            {/* Translation Selector */}
+            <TranslationSelector
+              selectedLanguage={translationLanguage}
+              onLanguageChange={handleTranslationChange}
+              disabled={isTranslating}
+              isTranslating={isTranslating}
+            />
+
             {/* Text-to-Speech Button - Cloud TTS */}
             {isAvailable && (
               <div className="flex gap-2 items-center">
@@ -696,9 +787,15 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <FileText className="h-5 w-5 text-primary" />
           Extracted Text
+          {translationLanguage && (
+            <Badge variant="outline" className="ml-2 text-xs">
+              <Languages className="h-3 w-3 mr-1" />
+              {getLanguageByCode(translationLanguage)?.name}
+            </Badge>
+          )}
         </h3>
         <div className="bg-muted/30 rounded-lg p-6 max-h-96 overflow-y-auto">
-          <p className="whitespace-pre-wrap text-sm leading-relaxed">{text}</p>
+          <p className="whitespace-pre-wrap text-sm leading-relaxed">{displayedText}</p>
         </div>
       </Card>
     </div>
