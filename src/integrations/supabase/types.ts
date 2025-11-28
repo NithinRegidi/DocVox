@@ -22,6 +22,33 @@ export interface AIAnalysis {
   analysisSource?: 'gemini-ai' | 'local' | 'edge-function';
   suggestedTags?: string[];  // AI-suggested tags
   suggestedFolder?: string;  // AI-suggested folder
+  detectedDeadlines?: DetectedDeadline[];  // AI-detected deadlines
+}
+
+export interface DetectedDeadline {
+  date: string;           // ISO date string
+  type: 'payment' | 'renewal' | 'deadline' | 'appointment' | 'expiry' | 'other';
+  description: string;
+  amount?: string;        // For payment deadlines
+  priority: 'high' | 'medium' | 'low';
+}
+
+export interface Reminder {
+  id: string;
+  user_id: string;
+  document_id: string | null;
+  title: string;
+  description: string | null;
+  due_date: string;
+  reminder_date: string | null;
+  type: 'deadline' | 'renewal' | 'payment' | 'appointment' | 'custom';
+  priority: 'high' | 'medium' | 'low';
+  status: 'pending' | 'completed' | 'dismissed' | 'overdue';
+  notified: boolean;
+  recurring: 'daily' | 'weekly' | 'monthly' | 'yearly' | null;
+  metadata: Record<string, unknown>;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export interface Tag {

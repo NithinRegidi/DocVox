@@ -1,7 +1,7 @@
 // Hybrid Document Analyzer
 // Tries Google Gemini AI first, falls back to local analyzer if unavailable
 
-import { analyzeWithGemini, isGeminiAvailable, GeminiAnalysis } from './geminiAI';
+import { analyzeWithGemini, isGeminiAvailable, GeminiAnalysis, DetectedDeadline } from './geminiAI';
 import { analyzeDocumentLocally, LocalAnalysis } from './localAnalyzer';
 
 export interface DocumentAnalysis {
@@ -16,6 +16,9 @@ export interface DocumentAnalysis {
   category: string;
   speakableSummary: string;
   analysisSource: 'gemini-ai' | 'local';
+  suggestedTags?: string[];
+  suggestedFolder?: string;
+  detectedDeadlines?: DetectedDeadline[];
 }
 
 export type AnalysisMode = 'auto' | 'ai-only' | 'local-only';
@@ -97,6 +100,9 @@ function convertGeminiAnalysis(analysis: GeminiAnalysis): DocumentAnalysis {
     category: analysis.category || 'General',
     speakableSummary: analysis.speakableSummary || analysis.summary || '',
     analysisSource: 'gemini-ai',
+    suggestedTags: analysis.suggestedTags || [],
+    suggestedFolder: analysis.suggestedFolder || '',
+    detectedDeadlines: analysis.detectedDeadlines || [],
   };
 }
 

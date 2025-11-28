@@ -1,8 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, TrendingUp, AlertCircle, Clock, CheckCircle2 } from "lucide-react";
+import { FileText, TrendingUp, AlertCircle, Clock, CheckCircle2, Bell } from "lucide-react";
 import { useMemo } from "react";
 import { Document } from "@/integrations/supabase/types";
+import ReminderManager from "@/components/ReminderManager";
 
 interface DashboardProps {
   documents: Document[];
@@ -162,6 +163,11 @@ const Dashboard = ({ documents }: DashboardProps) => {
             </div>
           ))}
         </div>
+      </Card>
+
+      {/* Reminders Section */}
+      <Card className="p-6">
+        <ReminderManager />
       </Card>
     </div>
   );

@@ -9,7 +9,9 @@ import ExtractedTextDisplay from "@/components/ExtractedTextDisplay";
 import DocumentHistory from "@/components/DocumentHistory";
 import Dashboard from "@/components/Dashboard";
 import TagManager from "@/components/TagManager";
-import { FileText, LogOut, History, BarChart3, Home, LayoutDashboard } from "lucide-react";
+import SmartSearch from "@/components/SmartSearch";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { FileText, LogOut, History, BarChart3, Home, LayoutDashboard, Search } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { Document, AIAnalysis } from "@/integrations/supabase/types";
 
@@ -24,6 +26,7 @@ const Index = () => {
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -65,7 +68,7 @@ const Index = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setDocuments((data as Document[]) || []);
+      setDocuments((data as unknown as Document[]) || []);
     } catch (error) {
       console.error('Error fetching documents:', error);
     }
@@ -157,11 +160,26 @@ const Index = () => {
             </Button>
             <TagManager />
             <Button 
+              variant={showSearch ? "default" : "ghost"}
+              size="sm" 
+              onClick={() => {
+                setShowSearch(!showSearch);
+                if (!showSearch) {
+                  setShowDashboard(false);
+                  setShowHistory(false);
+                }
+              }}
+            >
+              <Search className="h-4 w-4 mr-2" />
+              Smart Search
+            </Button>
+            <Button 
               variant={showDashboard ? "default" : "ghost"} 
               size="sm" 
               onClick={() => {
                 setShowDashboard(!showDashboard);
                 setShowHistory(false);
+                setShowSearch(false);
               }}
             >
               <BarChart3 className="h-4 w-4 mr-2" />
@@ -173,11 +191,13 @@ const Index = () => {
               onClick={() => {
                 setShowHistory(!showHistory);
                 setShowDashboard(false);
+                setShowSearch(false);
               }}
             >
               <History className="h-4 w-4 mr-2" />
               History
             </Button>
+            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
@@ -188,8 +208,8 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-6">
-          {/* Welcome Section - Hide when viewing History or Analytics */}
-          {!showHistory && !showDashboard && (
+          {/* Welcome Section - Hide when viewing History or Analytics or Search */}
+          {!showHistory && !showDashboard && !showSearch && (
             <Card className="p-6 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
               <h2 className="text-2xl font-bold mb-2">Welcome to Document Assistant</h2>
               <p className="text-muted-foreground">
@@ -199,13 +219,25 @@ const Index = () => {
             </Card>
           )}
 
+          {/* Smart Search Section */}
+          {showSearch && documents.length > 0 && (
+            <SmartSearch
+              documents={documents}
+              onDocumentSelect={(doc) => {
+                handleDocumentSelect(doc);
+                setShowSearch(false);
+              }}
+              onClose={() => setShowSearch(false)}
+            />
+          )}
+
           {/* Dashboard Section */}
           {showDashboard && documents.length > 0 && (
             <Dashboard documents={documents} />
           )}
 
-          {/* Upload Section - Hide when viewing History or Analytics */}
-          {!showDashboard && !showHistory && (
+          {/* Upload Section - Hide when viewing History or Analytics or Search */}
+          {!showDashboard && !showHistory && !showSearch && (
             <DocumentUpload
               onTextExtracted={handleTextExtracted}
               isProcessing={isProcessing}
@@ -220,11 +252,12 @@ const Index = () => {
               onDocumentSelect={handleDocumentSelect}
               onDocumentDelete={handleDocumentDelete}
               selectedDocumentId={selectedDocumentId}
+              onDocumentsChange={fetchDocuments}
             />
           )}
 
           {/* Results Section */}
-          {extractedText && !showDashboard && !showHistory && (
+          {extractedText && !showDashboard && !showHistory && !showSearch && (
             <ExtractedTextDisplay
               text={extractedText}
               documentType={documentType}

@@ -1,6 +1,14 @@
 // Google Gemini AI Integration for Document Analysis
 // Uses the Gemini API for intelligent document analysis
 
+export interface DetectedDeadline {
+  date: string;
+  type: 'payment' | 'renewal' | 'deadline' | 'appointment' | 'expiry' | 'other';
+  description: string;
+  amount?: string;
+  priority: 'high' | 'medium' | 'low';
+}
+
 export interface GeminiAnalysis {
   documentType: string;
   confidence: 'high' | 'medium' | 'low';
@@ -14,6 +22,7 @@ export interface GeminiAnalysis {
   speakableSummary: string;
   suggestedTags: string[];
   suggestedFolder: string;
+  detectedDeadlines: DetectedDeadline[];
 }
 
 // Get API key from environment
@@ -105,10 +114,23 @@ Respond with a JSON object (no markdown, no code blocks):
     "water", "gas", "phone", "internet", "rent", "mortgage", "loan", "credit-card",
     "education", "certificate", "id-proof", "passport", "license", "urgent", "important"
   ],
-  "suggestedFolder": "Suggest ONE folder from: Bills, Medical, Legal, Financial, Personal, Work, Government, Insurance, Education, Receipts"
+  "suggestedFolder": "Suggest ONE folder from: Bills, Medical, Legal, Financial, Personal, Work, Government, Insurance, Education, Receipts",
+  "detectedDeadlines": [
+    {
+      "date": "YYYY-MM-DD format - extract ANY date that represents a deadline, due date, expiry, renewal, or appointment",
+      "type": "payment | renewal | deadline | appointment | expiry | other",
+      "description": "Brief description like 'Electricity bill payment due' or 'Insurance policy renewal' or 'Passport expiry'",
+      "amount": "Include if it's a payment (e.g., '$150.00' or '₹5000')",
+      "priority": "high if within 7 days or overdue, medium if within 30 days, low otherwise"
+    }
+  ]
 }
 
-IMPORTANT: Replace all placeholder text with ACTUAL data from the document. If information is not found, omit that field or write "Not specified in document".`;
+IMPORTANT: 
+- Replace all placeholder text with ACTUAL data from the document. If information is not found, omit that field or write "Not specified in document".
+- For detectedDeadlines: Look for ANY dates that represent something the user needs to act on - payment due dates, renewal dates, expiry dates, appointment dates, submission deadlines, etc.
+- Convert all dates to YYYY-MM-DD format for consistency.
+- If no deadlines are found, return an empty array for detectedDeadlines.`;
 
     // Try multiple model names in order of preference
     const modelNames = [
@@ -240,6 +262,15 @@ function parseGeminiResponse(response: string): GeminiAnalysis | null {
       speakableSummary: parsed.speakableSummary || parsed.summary || '',
       suggestedTags: Array.isArray(parsed.suggestedTags) ? parsed.suggestedTags : [],
       suggestedFolder: parsed.suggestedFolder || 'Personal',
+      detectedDeadlines: Array.isArray(parsed.detectedDeadlines) 
+        ? parsed.detectedDeadlines.map((d: any) => ({
+            date: d.date || '',
+            type: validateDeadlineType(d.type),
+            description: d.description || '',
+            amount: d.amount,
+            priority: validateUrgency(d.priority),
+          }))
+        : [],
     };
   } catch (error) {
     console.error('JSON parse error:', error);
@@ -259,4 +290,12 @@ function validateUrgency(value: string): 'high' | 'medium' | 'low' {
     return value;
   }
   return 'low';
+}
+
+function validateDeadlineType(value: string): 'payment' | 'renewal' | 'deadline' | 'appointment' | 'expiry' | 'other' {
+  const validTypes = ['payment', 'renewal', 'deadline', 'appointment', 'expiry', 'other'];
+  if (validTypes.includes(value)) {
+    return value as 'payment' | 'renewal' | 'deadline' | 'appointment' | 'expiry' | 'other';
+  }
+  return 'other';
 }

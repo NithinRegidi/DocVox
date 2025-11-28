@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FileText, Scan, Brain, Volume2, CheckCircle, Sparkles, LogIn, LayoutDashboard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -55,7 +56,8 @@ const Landing = () => {
             <FileText className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold">Document Assistant</span>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
+            <ThemeToggle />
             {isLoggedIn ? (
               <Button onClick={() => navigate("/app")} className="gap-2">
                 <LayoutDashboard className="h-4 w-4" />

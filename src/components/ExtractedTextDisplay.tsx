@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { FileText, Copy, Check, AlertCircle, CheckCircle2, Clock, Download, Share2, Volume2, VolumeX, Pause, Play, Calendar, DollarSign, Mail, Phone, Hash, User, FileCheck, Lightbulb, Target, Shield } from "lucide-react";
+import { FileText, Copy, Check, AlertCircle, CheckCircle2, Clock, Download, Share2, Volume2, VolumeX, Pause, Play, Calendar, DollarSign, Mail, Phone, Hash, User, FileCheck, Lightbulb, Target, Shield, MessageCircle, Send } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { exportToPDF } from "@/lib/pdfExport";
@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AIAnalysis } from "@/integrations/supabase/types";
 import { useCloudTTS } from "@/lib/cloudTTS";
 import LanguageSelector from "@/components/LanguageSelector";
+import ReminderManager from "@/components/ReminderManager";
 
 interface ExtractedTextDisplayProps {
   text: string;
@@ -153,6 +154,119 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
       toast({
         title: "Export failed",
         description: "Could not generate PDF report",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Generate shareable summary text
+  const generateShareText = (format: 'short' | 'full' = 'short') => {
+    const docType = analysis?.documentType || documentType;
+    const summary = analysis?.summary || '';
+    const keyInfo = analysis?.keyInformation || [];
+    const actions = analysis?.suggestedActions || [];
+    const warnings = analysis?.warnings || [];
+    const urgency = analysis?.urgency || 'low';
+
+    if (format === 'short') {
+      let text = `📄 *${docType}*\n\n`;
+      text += `📋 *Summary:*\n${summary}\n`;
+      if (urgency === 'high') {
+        text += `\n🔴 *URGENT* - Requires immediate attention\n`;
+      }
+      if (keyInfo.length > 0) {
+        text += `\n🔑 *Key Info:*\n${keyInfo.slice(0, 3).map(k => `• ${k}`).join('\n')}\n`;
+      }
+      if (warnings.length > 0) {
+        text += `\n⚠️ *Warnings:*\n${warnings.slice(0, 2).map(w => `• ${w}`).join('\n')}\n`;
+      }
+      text += `\n_Analyzed by DocSpeak Aid_`;
+      return text;
+    }
+
+    // Full format for email
+    let text = `Document Analysis Report\n`;
+    text += `========================\n\n`;
+    text += `Document Type: ${docType}\n`;
+    text += `Priority: ${urgency.toUpperCase()}\n\n`;
+    text += `SUMMARY\n-------\n${summary}\n\n`;
+    if (analysis?.explanation) {
+      text += `EXPLANATION\n-----------\n${analysis.explanation}\n\n`;
+    }
+    if (keyInfo.length > 0) {
+      text += `KEY INFORMATION\n---------------\n${keyInfo.map(k => `• ${k}`).join('\n')}\n\n`;
+    }
+    if (actions.length > 0) {
+      text += `RECOMMENDED ACTIONS\n-------------------\n${actions.map((a, i) => `${i + 1}. ${a}`).join('\n')}\n\n`;
+    }
+    if (warnings.length > 0) {
+      text += `⚠️ WARNINGS\n-----------\n${warnings.map(w => `• ${w}`).join('\n')}\n\n`;
+    }
+    text += `---\nAnalyzed by DocSpeak Aid`;
+    return text;
+  };
+
+  // Share via WhatsApp
+  const handleWhatsAppShare = () => {
+    const text = generateShareText('short');
+    const encoded = encodeURIComponent(text);
+    window.open(`https://wa.me/?text=${encoded}`, '_blank');
+    toast({
+      title: "Opening WhatsApp",
+      description: "Share the document summary with your contacts",
+    });
+  };
+
+  // Share via Email
+  const handleEmailShare = () => {
+    const docType = analysis?.documentType || documentType;
+    const subject = encodeURIComponent(`Document Analysis: ${docType}`);
+    const body = encodeURIComponent(generateShareText('full'));
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_self');
+    toast({
+      title: "Opening Email",
+      description: "Compose an email with the document analysis",
+    });
+  };
+
+  // Native Share API (for mobile)
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Document Analysis: ${analysis?.documentType || documentType}`,
+          text: generateShareText('short'),
+        });
+        toast({
+          title: "Shared",
+          description: "Document summary shared successfully",
+        });
+      } catch (error) {
+        // User cancelled or share failed
+        if ((error as Error).name !== 'AbortError') {
+          toast({
+            title: "Share failed",
+            description: "Could not share the document",
+            variant: "destructive",
+          });
+        }
+      }
+    }
+  };
+
+  // Copy just the summary
+  const handleCopySummary = async () => {
+    try {
+      const text = generateShareText('short');
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Summary Copied",
+        description: "AI summary copied to clipboard - paste anywhere!",
+      });
+    } catch (error) {
+      toast({
+        title: "Copy failed",
+        description: "Could not copy summary",
         variant: "destructive",
       });
     }
@@ -418,6 +532,16 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
         </Card>
       )}
 
+      {/* Reminders & Detected Deadlines */}
+      {analysis && !isSharedView && (
+        <Card className="p-4">
+          <ReminderManager 
+            documentId={analysis.documentId} 
+            detectedDeadlines={analysis.detectedDeadlines}
+          />
+        </Card>
+      )}
+
       {/* Document Type Badge and Actions */}
       <Card className="p-4 bg-card/50">
         <div className="flex items-center justify-between flex-wrap gap-3">
@@ -486,8 +610,55 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
                 className="gap-2"
               >
                 <Share2 className="h-4 w-4" />
-                {isSharing ? "Generating..." : "Share"}
+                {isSharing ? "Generating..." : "Share Link"}
               </Button>
+            )}
+            {/* Quick Share Buttons */}
+            {analysis && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleWhatsAppShare}
+                  className="gap-2 hover:bg-green-50 hover:text-green-700 hover:border-green-300"
+                  title="Share via WhatsApp"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  <span className="hidden sm:inline">WhatsApp</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleEmailShare}
+                  className="gap-2 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
+                  title="Share via Email"
+                >
+                  <Mail className="h-4 w-4" />
+                  <span className="hidden sm:inline">Email</span>
+                </Button>
+                {typeof navigator !== 'undefined' && navigator.share && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleNativeShare}
+                    className="gap-2"
+                    title="Share via other apps"
+                  >
+                    <Send className="h-4 w-4" />
+                    <span className="hidden sm:inline">Share</span>
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopySummary}
+                  className="gap-2"
+                  title="Copy AI summary to clipboard"
+                >
+                  <Copy className="h-4 w-4" />
+                  <span className="hidden sm:inline">Copy Summary</span>
+                </Button>
+              </>
             )}
             <Button
               variant="outline"
