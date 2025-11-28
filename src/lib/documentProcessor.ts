@@ -4,6 +4,7 @@ import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 import mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
+import { cleanupExtractedText } from './textCleanup';
 
 // Configure PDF.js worker - use unpkg CDN which has newer versions
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
@@ -52,37 +53,41 @@ export async function processDocument(
   const fileName = file.name.toLowerCase();
 
   try {
+    let extractedText = '';
+
     // PDF files
     if (SUPPORTED_TYPES.pdf.includes(fileType)) {
-      return await extractTextFromPDF(file, onProgress);
+      extractedText = await extractTextFromPDF(file, onProgress);
     }
-    
     // Image files
-    if (SUPPORTED_TYPES.image.includes(fileType) || fileType.startsWith('image/')) {
-      return await extractTextFromImage(file, onProgress);
+    else if (SUPPORTED_TYPES.image.includes(fileType) || fileType.startsWith('image/')) {
+      extractedText = await extractTextFromImage(file, onProgress);
     }
-    
     // Word documents (.docx, .doc)
-    if (SUPPORTED_TYPES.word.includes(fileType) || fileName.endsWith('.docx') || fileName.endsWith('.doc')) {
-      return await extractTextFromWord(file, onProgress);
+    else if (SUPPORTED_TYPES.word.includes(fileType) || fileName.endsWith('.docx') || fileName.endsWith('.doc')) {
+      extractedText = await extractTextFromWord(file, onProgress);
     }
-    
     // Excel files (.xlsx, .xls)
-    if (SUPPORTED_TYPES.excel.includes(fileType) || fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      return await extractTextFromExcel(file, onProgress);
+    else if (SUPPORTED_TYPES.excel.includes(fileType) || fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+      extractedText = await extractTextFromExcel(file, onProgress);
     }
-    
     // CSV files
-    if (SUPPORTED_TYPES.csv.includes(fileType) || fileName.endsWith('.csv')) {
-      return await extractTextFromCSV(file, onProgress);
+    else if (SUPPORTED_TYPES.csv.includes(fileType) || fileName.endsWith('.csv')) {
+      extractedText = await extractTextFromCSV(file, onProgress);
     }
-    
     // Plain text files
-    if (SUPPORTED_TYPES.text.includes(fileType) || fileName.endsWith('.txt') || fileName.endsWith('.rtf')) {
-      return await extractTextFromTextFile(file, onProgress);
+    else if (SUPPORTED_TYPES.text.includes(fileType) || fileName.endsWith('.txt') || fileName.endsWith('.rtf')) {
+      extractedText = await extractTextFromTextFile(file, onProgress);
+    }
+    else {
+      throw new Error(`Unsupported file type: ${fileType || 'unknown'}. Supported: ${getSupportedFileTypes()}`);
     }
 
-    throw new Error(`Unsupported file type: ${fileType || 'unknown'}. Supported: ${getSupportedFileTypes()}`);
+    // Apply text cleanup to improve readability
+    const cleanedText = cleanupExtractedText(extractedText);
+    console.log('Text cleanup applied. Original length:', extractedText.length, 'Cleaned length:', cleanedText.length);
+    
+    return cleanedText;
   } catch (error) {
     console.error('Document processing error:', error);
     if (error instanceof Error) {

@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FileText, Scan, Brain, Volume2, CheckCircle, Sparkles, LogIn, LayoutDashboard } from "lucide-react";
+import { FileText, Scan, Brain, Volume2, CheckCircle, Sparkles, LogIn, LayoutDashboard, Camera, Languages } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -31,9 +31,19 @@ const Landing = () => {
       description: "Extract text from PDFs and images with advanced OCR processing"
     },
     {
+      icon: <Camera className="h-8 w-8 text-primary" />,
+      title: "Camera Scan",
+      description: "Capture documents directly from your camera for instant processing"
+    },
+    {
       icon: <Brain className="h-8 w-8 text-primary" />,
       title: "AI Summarization",
       description: "Get intelligent summaries of your documents powered by AI"
+    },
+    {
+      icon: <Languages className="h-8 w-8 text-primary" />,
+      title: "Multi-Language Translation",
+      description: "Translate documents into 22+ languages including Indian regional languages"
     },
     {
       icon: <Volume2 className="h-8 w-8 text-primary" />,
@@ -129,7 +139,7 @@ const Landing = () => {
             to make document management effortless.
           </p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {features.map((feature, index) => (
             <Card key={index} className="p-6 hover:shadow-lg transition-shadow border-2 hover:border-primary/50">
               <div className="mb-4">{feature.icon}</div>

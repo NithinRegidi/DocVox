@@ -5,12 +5,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileText, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Upload, FileText, Image as ImageIcon, Loader2, Camera } from "lucide-react";
 import { processDocument } from "@/lib/documentProcessor";
 import { detectDocumentType } from "@/lib/documentTypeDetector";
 import { analyzeDocumentHybrid } from "@/lib/hybridAnalyzer";
 import { AIAnalysis } from "@/integrations/supabase/types";
 import { Session } from "@supabase/supabase-js";
+import CameraCapture from "@/components/CameraCapture";
 
 interface DocumentUploadProps {
   onTextExtracted: (text: string, documentType: string, analysis?: AIAnalysis) => void;
@@ -27,6 +28,7 @@ interface FileProgress {
 
 const DocumentUpload = ({ onTextExtracted, isProcessing, setIsProcessing }: DocumentUploadProps) => {
   const [filesProgress, setFilesProgress] = useState<FileProgress[]>([]);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const { toast } = useToast();
   const filesProgressLengthRef = useRef(0);
 
@@ -219,6 +221,12 @@ const DocumentUpload = ({ onTextExtracted, isProcessing, setIsProcessing }: Docu
     [processFile, setIsProcessing, toast]
   );
 
+  // Handle camera capture - process captured image like a dropped file
+  const handleCameraCapture = useCallback((file: File) => {
+    setCameraOpen(false);
+    onDrop([file]);
+  }, [onDrop]);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
@@ -294,14 +302,35 @@ const DocumentUpload = ({ onTextExtracted, isProcessing, setIsProcessing }: Docu
                   PDF, Word (DOC, DOCX), Images (PNG, JPG, WEBP), Text (TXT) • Up to 10 files
                 </p>
               </div>
-              <Button variant="outline" className="mt-2">
-                <Upload className="h-4 w-4 mr-2" />
-                Select Files
-              </Button>
+              <div className="flex gap-3 mt-2">
+                <Button variant="outline">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Select Files
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCameraOpen(true);
+                  }}
+                  className="gap-2"
+                >
+                  <Camera className="h-4 w-4" />
+                  Scan Document
+                </Button>
+              </div>
             </>
           )}
         </div>
       </div>
+
+      {/* Camera Capture Dialog */}
+      <CameraCapture
+        open={cameraOpen}
+        onOpenChange={setCameraOpen}
+        onCapture={handleCameraCapture}
+        isProcessing={isProcessing}
+      />
     </Card>
   );
 };
