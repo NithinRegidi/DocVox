@@ -451,30 +451,49 @@ class CloudTTSManager {
 // Singleton instance
 export const cloudTTS = new CloudTTSManager();
 
-// React Hook
+// React Hook - Uses Google Cloud TTS (Indian languages) → ElevenLabs → Pollinations → Browser TTS fallback
 import { useState, useEffect, useCallback } from 'react';
+import { browserTTS, TTS_LANGUAGES } from './browserTTS';
+import { elevenLabsTTS } from './elevenLabsTTS';
+import { googleTTS, GOOGLE_TTS_LANGUAGES } from './googleTTS';
+import { pollinationsTTS } from './pollinationsTTS';
+import { googleCloudTTS } from './googleCloudTTS';
+import { sarvamTTS } from './sarvamTTS';
+import { murfTTS } from './murfTTS';
 
 export function useCloudTTS() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isAvailable, setIsAvailable] = useState(false);
-  const [selectedLanguage, setSelectedLanguageState] = useState('en-US');
+  const [selectedLanguage, setSelectedLanguageState] = useState('en-IN');
   const [selectedVoice, setSelectedVoiceState] = useState('');
   const [availableLanguages] = useState<CloudLanguageOption[]>(CLOUD_LANGUAGES);
+  const [ttsProvider, setTtsProvider] = useState<'elevenlabs' | 'browser'>('elevenlabs');
 
   useEffect(() => {
-    setIsAvailable(cloudTTS.isAvailable());
+    // Check which TTS services are available
+    const elevenLabsAvailable = elevenLabsTTS.isAvailable();
+    const browserAvailable = browserTTS.isAvailable();
     
-    // Set default voice for default language
-    const defaultVoices = cloudTTS.getVoicesForLanguage('en-US');
-    if (defaultVoices.length > 0) {
-      setSelectedVoiceState(defaultVoices[0].name);
-    }
-
+    // Google Cloud TTS is the best for Indian languages!
+    const googleCloudAvailable = googleCloudTTS.isAvailable();
+    const sarvamAvailable = sarvamTTS.isAvailable();
+    const murfAvailable = murfTTS.isAvailable();
+    setIsAvailable(true);
+    setTtsProvider(elevenLabsAvailable ? 'elevenlabs' : 'browser');
+    
+    console.log('🔊 TTS Providers available:');
+    console.log('  - 🇮🇳 Sarvam AI (Indian languages):', sarvamAvailable ? '✅ YES' : '❌ NO');
+    console.log('  - 🎤 Murf AI (Premium voices):', murfAvailable ? '✅ YES' : '❌ NO');
+    console.log('  - Google Cloud TTS (Indian languages):', googleCloudAvailable ? '✅ YES' : '❌ NO');
+    console.log('  - ElevenLabs:', elevenLabsAvailable ? '✅ YES' : '❌ NO');
+    console.log('  - Pollinations.AI: ✅ YES (always available)');
+    console.log('  - Browser TTS:', browserAvailable ? '✅ YES' : '❌ NO');
+    
     // Update state periodically
     const interval = setInterval(() => {
-      setIsSpeaking(cloudTTS.isSpeaking());
-      setIsPaused(cloudTTS.isPausedState());
+      setIsSpeaking(sarvamTTS.isSpeaking() || murfTTS.isSpeaking() || googleCloudTTS.isSpeaking() || elevenLabsTTS.isSpeaking() || pollinationsTTS.isSpeaking() || googleTTS.isSpeaking() || browserTTS.isSpeaking() || cloudTTS.isSpeaking());
+      setIsPaused(sarvamTTS.isPausedState() || murfTTS.isPausedState() || googleCloudTTS.isPausedState() || elevenLabsTTS.isPausedState() || pollinationsTTS.isPausedState() || browserTTS.isPausedState() || cloudTTS.isPausedState());
     }, 100);
 
     return () => clearInterval(interval);
@@ -482,13 +501,8 @@ export function useCloudTTS() {
 
   const setLanguage = useCallback((langCode: string) => {
     setSelectedLanguageState(langCode);
+    browserTTS.setLanguage(langCode);
     cloudTTS.setLanguage(langCode);
-    
-    // Auto-select first voice
-    const voices = cloudTTS.getVoicesForLanguage(langCode);
-    if (voices.length > 0) {
-      setSelectedVoiceState(voices[0].name);
-    }
   }, []);
 
   const setVoice = useCallback((voiceName: string) => {
@@ -496,46 +510,230 @@ export function useCloudTTS() {
     cloudTTS.setVoice(voiceName);
   }, []);
 
+  // Primary speak function - Sarvam AI (Indian languages) → Google Cloud TTS → ElevenLabs → Pollinations → Browser TTS
   const speak = useCallback(async (text: string, options?: CloudTTSOptions) => {
     setIsSpeaking(true);
+    const langCode = options?.languageCode || selectedLanguage;
+    const baseLang = langCode.split('-')[0];
+
+    // Check if this is an Indian language
+    const indianLanguages = ['te', 'hi', 'ta', 'kn', 'ml', 'bn', 'gu', 'mr', 'pa', 'or'];
+    const isIndianLanguage = indianLanguages.includes(baseLang);
+
+    console.log(`🗣️ Speaking in ${langCode}, Indian language: ${isIndianLanguage}`);
+
+    // FIRST: Try Sarvam AI for Indian languages (BEST for Telugu, Hindi, Tamil!)
+    if (isIndianLanguage && sarvamTTS.isAvailable() && sarvamTTS.supportsLanguage(langCode)) {
+      try {
+        console.log('🇮🇳 Using Sarvam AI TTS (Native Indian voices - Made in India!)');
+        await sarvamTTS.speak(text, langCode);
+        return;
+      } catch (sarvamError) {
+        console.warn('Sarvam AI TTS failed:', sarvamError);
+      }
+    }
+
+    // SECOND: Try Murf AI for high-quality voices
+    if (murfTTS.isAvailable() && murfTTS.supportsLanguage(langCode)) {
+      try {
+        console.log('🎤 Using Murf AI TTS (Premium quality voices!)');
+        await murfTTS.speak(text, langCode);
+        return;
+      } catch (murfError) {
+        console.warn('Murf AI TTS failed:', murfError);
+      }
+    }
+
     try {
-      await cloudTTS.speak(text, { 
-        ...options, 
-        languageCode: options?.languageCode || selectedLanguage,
-        voiceName: options?.voiceName || selectedVoice,
-      });
+      // THIRD: Try Google Cloud TTS for Indian languages
+      if (isIndianLanguage && googleCloudTTS.isAvailable() && googleCloudTTS.supportsLanguage(langCode)) {
+        console.log('☁️ Using Google Cloud TTS (Fallback for Indian languages)');
+        await googleCloudTTS.speak(text, langCode);
+        return;
+      }
+    } catch (googleCloudError) {
+      console.warn('Google Cloud TTS failed:', googleCloudError);
+    }
+
+    try {
+      // Try ElevenLabs (premium quality)
+      if (elevenLabsTTS.isAvailable()) {
+        console.log('🎤 Using ElevenLabs TTS (Premium)');
+        await elevenLabsTTS.speak(text, langCode);
+        return;
+      }
+    } catch (elevenLabsError) {
+      console.warn('ElevenLabs TTS failed:', elevenLabsError);
+    }
+    
+    try {
+      // Try Pollinations.AI TTS (FREE, works for English)
+      console.log('🌸 Using Pollinations.AI TTS (FREE - No API Key!)');
+      await pollinationsTTS.speak(text);
+      return;
+    } catch (pollinationsError) {
+      console.warn('Pollinations TTS failed:', pollinationsError);
+    }
+    
+    try {
+      // Fallback to browser TTS
+      console.log('🔊 Using Browser TTS (Free)');
+      await browserTTS.speak(text, langCode);
+    } catch (browserError) {
+      console.error('All TTS methods failed:', browserError);
+      throw new Error('Text-to-speech is not available. Please check your browser settings.');
     } finally {
       setIsSpeaking(false);
     }
-  }, [selectedLanguage, selectedVoice]);
+  }, [selectedLanguage]);
 
+  // Speak analysis - ElevenLabs → Browser TTS fallback
   const speakAnalysis = useCallback(async (
     analysis: Parameters<typeof cloudTTS.speakAnalysis>[0], 
     options?: CloudTTSOptions
   ) => {
     setIsSpeaking(true);
+    const langCode = options?.languageCode || selectedLanguage;
+    
+    // Construct text from analysis
+    let textToSpeak = '';
+    
+    if (analysis.speakableSummary) {
+      textToSpeak = analysis.speakableSummary;
+    } else {
+      const parts: string[] = [];
+      
+      if (analysis.documentType) {
+        parts.push(`This is a ${analysis.documentType}.`);
+      }
+      
+      if (analysis.explanation) {
+        parts.push(analysis.explanation);
+      } else if (analysis.summary) {
+        parts.push(analysis.summary);
+      }
+      
+      if (analysis.warnings && analysis.warnings.length > 0) {
+        parts.push(`Important warnings: ${analysis.warnings.join('. ')}`);
+      }
+      
+      if (analysis.suggestedActions && analysis.suggestedActions.length > 0) {
+        parts.push(`Here's what you should do: ${analysis.suggestedActions.slice(0, 3).map((action, i) => `${i + 1}. ${action}`).join('. ')}`);
+      }
+      
+      textToSpeak = parts.join(' ');
+    }
+
+    // Check if this is an Indian language - use Sarvam AI for best quality!
+    const baseLang = langCode.split('-')[0];
+    const isIndianLanguage = ['te', 'hi', 'ta', 'kn', 'ml', 'bn', 'gu', 'mr', 'pa', 'or'].includes(baseLang);
+
+    // FIRST: Try Sarvam AI for Indian languages (BEST for Telugu, Hindi, Tamil!)
+    if (isIndianLanguage && sarvamTTS.isAvailable() && sarvamTTS.supportsLanguage(langCode)) {
+      try {
+        console.log('🇮🇳 Using Sarvam AI TTS for analysis (Native Indian voices!)');
+        await sarvamTTS.speak(textToSpeak, langCode);
+        return;
+      } catch (sarvamError) {
+        console.warn('Sarvam AI TTS failed for analysis:', sarvamError);
+      }
+    }
+
+    // SECOND: Try Murf AI for high-quality voices
+    if (murfTTS.isAvailable() && murfTTS.supportsLanguage(langCode)) {
+      try {
+        console.log('🎤 Using Murf AI TTS for analysis (Premium quality!)');
+        await murfTTS.speak(textToSpeak, langCode);
+        return;
+      } catch (murfError) {
+        console.warn('Murf AI TTS failed for analysis:', murfError);
+      }
+    }
+
+    // THIRD: Try Google Cloud TTS for Indian languages
+    if (isIndianLanguage && googleCloudTTS.isAvailable()) {
+      try {
+        console.log('☁️ Using Google Cloud TTS for analysis (Fallback)');
+        await googleCloudTTS.speak(textToSpeak, langCode);
+        return;
+      } catch (googleCloudError) {
+        console.warn('Google Cloud TTS failed for analysis:', googleCloudError);
+      }
+    }
+
     try {
-      await cloudTTS.speakAnalysis(analysis, { 
-        ...options, 
-        languageCode: options?.languageCode || selectedLanguage,
-        voiceName: options?.voiceName || selectedVoice,
-      });
+      // Try ElevenLabs (premium quality)
+      if (elevenLabsTTS.isAvailable()) {
+        console.log('🎤 Using ElevenLabs TTS for analysis (Premium)');
+        await elevenLabsTTS.speak(textToSpeak, langCode);
+        return;
+      }
+    } catch (elevenLabsError) {
+      console.warn('ElevenLabs TTS failed for analysis, trying Pollinations.AI:', elevenLabsError);
+    }
+    
+    try {
+      // Try Pollinations.AI TTS (FREE, no API key!)
+      console.log('🌸 Using Pollinations.AI TTS for analysis (FREE)');
+      await pollinationsTTS.speak(textToSpeak);
+      return;
+    } catch (pollinationsError) {
+      console.warn('Pollinations TTS failed for analysis, trying Google TTS:', pollinationsError);
+    }
+    
+    try {
+      // Try Google Translate TTS (great for Indian languages)
+      if (googleTTS.isAvailable(langCode)) {
+        console.log('🌐 Using Google Translate TTS for analysis (Free, Indian languages)');
+        await googleTTS.speak(textToSpeak, langCode);
+        return;
+      }
+    } catch (googleError) {
+      console.warn('Google TTS failed for analysis, falling back to browser:', googleError);
+    }
+    
+    try {
+      // Fallback to browser TTS
+      console.log('🔊 Using Browser TTS for analysis (Free)');
+      await browserTTS.speak(textToSpeak, langCode);
+    } catch (browserError) {
+      console.error('All TTS methods failed:', browserError);
+      throw new Error('Text-to-speech is not available. Please check your browser settings.');
     } finally {
       setIsSpeaking(false);
     }
-  }, [selectedLanguage, selectedVoice]);
+  }, [selectedLanguage]);
 
   const pause = useCallback(() => {
+    sarvamTTS.pause();
+    murfTTS.pause();
+    googleCloudTTS.pause();
+    elevenLabsTTS.pause();
+    pollinationsTTS.pause();
+    browserTTS.pause();
     cloudTTS.pause();
     setIsPaused(true);
   }, []);
 
   const resume = useCallback(() => {
+    sarvamTTS.resume();
+    murfTTS.resume();
+    googleCloudTTS.resume();
+    elevenLabsTTS.resume();
+    pollinationsTTS.resume();
+    browserTTS.resume();
     cloudTTS.resume();
     setIsPaused(false);
   }, []);
 
   const stop = useCallback(() => {
+    sarvamTTS.stop();
+    murfTTS.stop();
+    googleCloudTTS.stop();
+    elevenLabsTTS.stop();
+    pollinationsTTS.stop();
+    googleTTS.stop();
+    browserTTS.stop();
     cloudTTS.stop();
     setIsSpeaking(false);
     setIsPaused(false);
@@ -543,6 +741,23 @@ export function useCloudTTS() {
 
   const getVoicesForLanguage = useCallback((langCode: string) => {
     return cloudTTS.getVoicesForLanguage(langCode);
+  }, []);
+
+  // Check if a voice is available for the language (now includes Sarvam AI and Murf)
+  const hasVoiceForLanguage = useCallback((langCode: string) => {
+    // Sarvam AI supports Indian languages (BEST!)
+    if (sarvamTTS.isAvailable() && sarvamTTS.supportsLanguage(langCode)) {
+      return true;
+    }
+    // Murf AI supports many languages
+    if (murfTTS.isAvailable() && murfTTS.supportsLanguage(langCode)) {
+      return true;
+    }
+    // Google Cloud TTS supports Indian languages
+    if (googleCloudTTS.isAvailable() && googleCloudTTS.supportsLanguage(langCode)) {
+      return true;
+    }
+    return browserTTS.hasVoiceForLanguage(langCode);
   }, []);
 
   return {
@@ -560,5 +775,6 @@ export function useCloudTTS() {
     setVoice,
     availableLanguages,
     getVoicesForLanguage,
+    hasVoiceForLanguage,
   };
 }

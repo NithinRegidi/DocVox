@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FileText, Scan, Brain, Volume2, CheckCircle, Sparkles, LogIn, LayoutDashboard, Camera, Languages } from "lucide-react";
+import { FileText, Scan, Brain, Volume2, CheckCircle, Sparkles, LogIn, LayoutDashboard, Camera, Languages, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -49,6 +49,11 @@ const Landing = () => {
       icon: <Volume2 className="h-8 w-8 text-primary" />,
       title: "Regional Audio Guide",
       description: "Listen to your documents in multiple regional languages"
+    },
+    {
+      icon: <MessageSquare className="h-8 w-8 text-primary" />,
+      title: "Voice Chat Assistant",
+      description: "Ask questions about your documents in your language - Telugu, Tamil, Hindi, or English"
     },
     {
       icon: <CheckCircle className="h-8 w-8 text-primary" />,

@@ -1,5 +1,8 @@
 // Google Gemini AI Integration for Document Analysis
 // Uses the Gemini API for intelligent document analysis
+// With multi-model fallback support (GPT-4o, Llama 3.1)
+
+import { callAIWithFallback, getAvailableModels } from './multiModelAI';
 
 export interface DetectedDeadline {
   date: string;
@@ -106,7 +109,7 @@ Respond with a JSON object (no markdown, no code blocks):
   ],
   "urgency": "high if there are deadlines within 7 days or overdue items, medium if within 30 days, low otherwise",
   "category": "Financial, Legal, Medical, Personal, Business, Government, Education, or Insurance",
-  "speakableSummary": "Write a natural sentence like: This is a [type] from [company] dated [date], regarding [main topic]. The total amount is [amount] and it is due by [date].",
+  "speakableSummary": "Write a friendly, conversational introduction as if you're explaining this document to a friend who hasn't seen it. Start with: 'So, I've looked at this document for you...' then explain: (1) What type of document this is and who it's from, (2) What it's about in simple terms, (3) The most important thing the person should know or do. Make it 4-6 sentences, natural and easy to understand. Use simple language, not formal. Example: 'So, I've looked at this document for you. This is an electricity bill from APSPDCL for the month of October 2025. They're asking you to pay 450 rupees by November 15th. The bill shows your consumption was higher than last month. I'd suggest paying this soon to avoid any late fees.'",
   "suggestedTags": [
     "Suggest 3-6 relevant tags for organizing this document, such as:",
     "bill", "invoice", "receipt", "bank", "insurance", "medical", "prescription",
@@ -223,6 +226,48 @@ IMPORTANT:
     return analysis;
   } catch (error) {
     console.error('❌ Gemini analysis error:', error);
+    
+    // Try fallback models (GPT-4o, Llama 3.1)
+    console.log('🔄 Trying fallback models...');
+    const availableModels = getAvailableModels();
+    console.log('📋 Available fallback models:', availableModels);
+    
+    if (availableModels.length > 1) { // More than just Gemini
+      try {
+        const fallbackPrompt = `Analyze this document and respond with JSON only:
+{
+  "documentType": "specific type",
+  "confidence": "high/medium/low",
+  "summary": "2-3 sentence summary",
+  "explanation": "detailed explanation",
+  "keyInformation": ["key facts"],
+  "suggestedActions": ["recommended actions"],
+  "warnings": ["important warnings"],
+  "urgency": "high/medium/low",
+  "category": "Financial/Legal/Medical/Personal/Business/Government/Education/Insurance",
+  "speakableSummary": "conversational summary for TTS",
+  "suggestedTags": ["relevant", "tags"],
+  "suggestedFolder": "Bills/Medical/Legal/Financial/Personal/Work/Government/Insurance/Education/Receipts",
+  "detectedDeadlines": []
+}
+
+Document:
+${text.substring(0, 10000)}`;
+
+        const result = await callAIWithFallback(fallbackPrompt, undefined, 'gpt-4o');
+        
+        if (result.success && result.text) {
+          console.log(`✅ Fallback model ${result.model} succeeded`);
+          const fallbackAnalysis = parseGeminiResponse(result.text);
+          if (fallbackAnalysis) {
+            return fallbackAnalysis;
+          }
+        }
+      } catch (fallbackError) {
+        console.error('❌ Fallback models also failed:', fallbackError);
+      }
+    }
+    
     throw error; // Re-throw to let hybrid analyzer handle it
   }
 }

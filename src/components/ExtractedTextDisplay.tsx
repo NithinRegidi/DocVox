@@ -13,6 +13,7 @@ import { useCloudTTS } from "@/lib/cloudTTS";
 import LanguageSelector from "@/components/LanguageSelector";
 import ReminderManager from "@/components/ReminderManager";
 import TranslationSelector from "@/components/TranslationSelector";
+import DocumentChat from "@/components/DocumentChat";
 import { translateText, translateAnalysis, getLanguageByCode, isTranslationAvailable, TranslatedAnalysis } from "@/lib/translation";
 
 interface ExtractedTextDisplayProps {
@@ -30,7 +31,7 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
   const [isSharing, setIsSharing] = useState(false);
   const [shareLink, setShareLink] = useState<string>("");
   const [linkCopied, setLinkCopied] = useState(false);
-  const { speak, speakAnalysis, stop, pause, resume, isSpeaking, isPaused, isAvailable, selectedLanguage, setLanguage, availableLanguages } = useCloudTTS();
+  const { speak, speakAnalysis, stop, pause, resume, isSpeaking, isPaused, isAvailable, selectedLanguage, setLanguage, availableLanguages, hasVoiceForLanguage } = useCloudTTS();
 
   // Translation state
   const [translationLanguage, setTranslationLanguage] = useState<string>("");
@@ -38,9 +39,14 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
   const [translatedAnalysis, setTranslatedAnalysis] = useState<TranslatedAnalysis | null>(null);
   const [translatedText, setTranslatedText] = useState<string>("");
 
-  // Handle translation
+  // Handle translation - also sync TTS language
   const handleTranslationChange = async (langCode: string) => {
     setTranslationLanguage(langCode);
+    
+    // Sync TTS language with translation language for seamless experience
+    if (langCode) {
+      setLanguage(langCode);
+    }
     
     if (!langCode) {
       // Reset to original
@@ -103,7 +109,16 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
 
   const displayedText = translatedText && translationLanguage ? translatedText : text;
 
+  // Prevent re-entrance while speak is in progress
+  const [isSpeakInProgress, setIsSpeakInProgress] = useState(false);
+
   const handleSpeak = async () => {
+    // If already in the middle of starting speech, ignore
+    if (isSpeakInProgress) {
+      console.log('🔊 Speak already in progress, ignoring click');
+      return;
+    }
+
     if (isSpeaking && !isPaused) {
       pause();
       return;
@@ -114,32 +129,128 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
       return;
     }
 
+    setIsSpeakInProgress(true);
+
     try {
-      if (analysis) {
-        await speakAnalysis({
-          documentType: analysis.documentType,
-          summary: analysis.summary,
-          explanation: analysis.explanation,
-          keyInformation: analysis.keyInformation,
-          suggestedActions: analysis.suggestedActions,
-          warnings: analysis.warnings,
-          speakableSummary: analysis.speakableSummary,
+      // Check if we need to translate for speech
+      const baseLang = selectedLanguage?.split('-')[0] || 'en';
+      const needsTranslation = baseLang !== 'en';
+      
+      // Check if voice is available for the selected language
+      const voiceAvailable = hasVoiceForLanguage(selectedLanguage);
+      
+      console.log('🔊 handleSpeak called');
+      console.log('  - selectedLanguage:', selectedLanguage);
+      console.log('  - baseLang:', baseLang);
+      console.log('  - needsTranslation:', needsTranslation);
+      console.log('  - voiceAvailable:', voiceAvailable);
+      
+      // Show warning if voice is not available
+      if (!voiceAvailable && needsTranslation) {
+        const langName = getLanguageByCode(baseLang)?.name || baseLang;
+        toast({
+          title: `${langName} voice not installed`,
+          description: "Will speak in English. To add voices: Windows Settings → Time & Language → Speech → Add voices",
+          variant: "destructive",
         });
+      }
+      
+      let textToSpeak = '';
+      
+      if (displayedAnalysis) {
+        // If voice is NOT available for the target language, speak English instead
+        if (!voiceAvailable && needsTranslation) {
+          console.log('  - No voice for target language, speaking English instead');
+          textToSpeak = displayedAnalysis.speakableSummary || 
+            displayedAnalysis.explanation || 
+            displayedAnalysis.summary || '';
+          
+          // Force English for speaking
+          try {
+            await speak(textToSpeak, { languageCode: 'en-US' });
+          } finally {
+            setIsSpeakInProgress(false);
+          }
+          return;
+        }
+        
+        // If already translated to the same language, use it
+        if (translationLanguage === baseLang && translatedAnalysis?.speakableSummary) {
+          console.log('  - Using already translated content');
+          textToSpeak = translatedAnalysis.speakableSummary;
+        } else if (needsTranslation && isTranslationAvailable()) {
+          // Auto-translate for speech
+          const langName = getLanguageByCode(baseLang)?.name || baseLang;
+          console.log('  - Auto-translating to:', langName);
+          
+          toast({
+            title: `Translating to ${langName}...`,
+            description: "Please wait while we translate for speech",
+          });
+          
+          const contentToTranslate = displayedAnalysis.speakableSummary || 
+            displayedAnalysis.explanation || 
+            displayedAnalysis.summary || 
+            displayedText.substring(0, 1500);
+          
+          console.log('  - Content to translate:', contentToTranslate.substring(0, 100) + '...');
+          
+          try {
+            const translated = await translateText(contentToTranslate, baseLang);
+            textToSpeak = translated;
+            console.log('  - Translated text:', translated.substring(0, 100) + '...');
+            
+            toast({
+              title: "Translation complete!",
+              description: `Now speaking in ${langName}`,
+            });
+          } catch (translateError) {
+            console.error('Translation failed:', translateError);
+            toast({
+              title: "Translation failed",
+              description: "Speaking in English instead",
+              variant: "destructive",
+            });
+            textToSpeak = contentToTranslate;
+          }
+        } else {
+          // Use original English
+          console.log('  - Using original English content');
+          textToSpeak = displayedAnalysis.speakableSummary || 
+            displayedAnalysis.explanation || 
+            displayedAnalysis.summary || '';
+        }
+        
+        console.log('  - Final text to speak:', textToSpeak.substring(0, 100) + '...');
+        await speak(textToSpeak);
       } else {
-        // Just read the extracted text if no analysis
-        await speak(text.substring(0, 2000)); // Limit text length for speech
+        // No analysis, just read the text
+        let contentToSpeak = displayedText.substring(0, 2000);
+        
+        if (needsTranslation && isTranslationAvailable()) {
+          try {
+            contentToSpeak = await translateText(contentToSpeak, baseLang);
+          } catch (e) {
+            console.warn('Translation failed:', e);
+          }
+        }
+        
+        await speak(contentToSpeak);
       }
     } catch (error) {
       console.error('TTS Error:', error);
       toast({
         title: "Speech Error",
-        description: "Could not read the document aloud. Please check your API key or try again.",
+        description: "Could not read the document aloud. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSpeakInProgress(false);
     }
   };
 
   const handleStopSpeaking = () => {
+    setIsSpeakInProgress(false);
     stop();
   };
 
@@ -798,6 +909,13 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
           <p className="whitespace-pre-wrap text-sm leading-relaxed">{displayedText}</p>
         </div>
       </Card>
+
+      {/* Voice Chat Assistant */}
+      <DocumentChat 
+        documentText={displayedText}
+        documentType={documentType}
+        analysis={displayedAnalysis}
+      />
     </div>
   );
 };

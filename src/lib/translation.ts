@@ -39,9 +39,13 @@ export const TRANSLATION_LANGUAGES: TranslationLanguage[] = [
   { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺' },
 ];
 
-// Get language by code
+// Get language by code (supports both 'te' and 'te-IN' formats)
 export function getLanguageByCode(code: string): TranslationLanguage | undefined {
-  return TRANSLATION_LANGUAGES.find(lang => lang.code === code);
+  const baseCode = code?.split('-')[0]?.toLowerCase();
+  return TRANSLATION_LANGUAGES.find(lang => 
+    lang.code.toLowerCase() === code?.toLowerCase() || 
+    lang.code.toLowerCase() === baseCode
+  );
 }
 
 // Check if translation service is available
@@ -63,21 +67,27 @@ export async function translateText(
     return '';
   }
 
-  const targetLang = getLanguageByCode(targetLanguage);
-  const sourceLang = sourceLanguage ? getLanguageByCode(sourceLanguage) : null;
+  // Extract base language code (e.g., 'te' from 'te-IN')
+  const targetLangCode = targetLanguage.split('-')[0];
+  const targetLang = getLanguageByCode(targetLangCode);
+  const sourceLang = sourceLanguage ? getLanguageByCode(sourceLanguage.split('-')[0]) : null;
 
   if (!targetLang) {
-    throw new Error(`Unsupported target language: ${targetLanguage}`);
+    console.warn(`Unsupported target language: ${targetLanguage}, using code directly`);
   }
 
+  const targetLangName = targetLang?.name || targetLanguage;
+  
+  console.log(`🌐 Translating to ${targetLangName} (${targetLangCode})`);
+
   const prompt = sourceLang
-    ? `Translate the following text from ${sourceLang.name} to ${targetLang.name}. 
+    ? `Translate the following text from ${sourceLang.name} to ${targetLangName}. 
        Provide only the translation, no explanations or additional text.
        Maintain the original formatting (paragraphs, bullet points, etc.).
        
        Text to translate:
        ${text}`
-    : `Translate the following text to ${targetLang.name}. 
+    : `Translate the following text to ${targetLangName}. 
        Auto-detect the source language.
        Provide only the translation, no explanations or additional text.
        Maintain the original formatting (paragraphs, bullet points, etc.).

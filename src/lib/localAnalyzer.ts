@@ -68,7 +68,7 @@ export function analyzeDocumentLocally(text: string, detectedType: string): Loca
   const confidence = wordCount > 100 ? 'high' : wordCount > 30 ? 'medium' : 'low';
   
   // Generate speakable summary
-  const speakableSummary = `This document is ${documentType.toLowerCase()}. ${summary} ${suggestedActions[0] ? 'You should ' + suggestedActions[0].toLowerCase() : ''}`;
+  const speakableSummary = `So, I've looked at this document for you. This appears to be a ${documentType.toLowerCase()}. ${summary} ${suggestedActions[0] ? 'I would suggest you ' + suggestedActions[0].toLowerCase() + '.' : ''} Let me know if you have any questions about it.`;
   
   return {
     documentType,
