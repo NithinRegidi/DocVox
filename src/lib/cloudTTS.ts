@@ -522,60 +522,60 @@ export function useCloudTTS() {
 
     console.log(`🗣️ Speaking in ${langCode}, Indian language: ${isIndianLanguage}`);
 
-    // FIRST: Try Sarvam AI for Indian languages (BEST for Telugu, Hindi, Tamil!)
-    if (isIndianLanguage && sarvamTTS.isAvailable() && sarvamTTS.supportsLanguage(langCode)) {
+    try {
+      // FIRST: Try Sarvam AI for Indian languages (BEST for Telugu, Hindi, Tamil!)
+      if (isIndianLanguage && sarvamTTS.isAvailable() && sarvamTTS.supportsLanguage(langCode)) {
+        try {
+          console.log('🇮🇳 Using Sarvam AI TTS (Native Indian voices - Made in India!)');
+          await sarvamTTS.speak(text, langCode);
+          return;
+        } catch (sarvamError) {
+          console.warn('Sarvam AI TTS failed:', sarvamError);
+        }
+      }
+
+      // SECOND: Try Murf AI for high-quality voices
+      if (murfTTS.isAvailable() && murfTTS.supportsLanguage(langCode)) {
+        try {
+          console.log('🎤 Using Murf AI TTS (Premium quality voices!)');
+          await murfTTS.speak(text, langCode);
+          return;
+        } catch (murfError) {
+          console.warn('Murf AI TTS failed:', murfError);
+        }
+      }
+
       try {
-        console.log('🇮🇳 Using Sarvam AI TTS (Native Indian voices - Made in India!)');
-        await sarvamTTS.speak(text, langCode);
-        return;
-      } catch (sarvamError) {
-        console.warn('Sarvam AI TTS failed:', sarvamError);
+        // THIRD: Try Google Cloud TTS for Indian languages
+        if (isIndianLanguage && googleCloudTTS.isAvailable() && googleCloudTTS.supportsLanguage(langCode)) {
+          console.log('☁️ Using Google Cloud TTS (Fallback for Indian languages)');
+          await googleCloudTTS.speak(text, langCode);
+          return;
+        }
+      } catch (googleCloudError) {
+        console.warn('Google Cloud TTS failed:', googleCloudError);
       }
-    }
 
-    // SECOND: Try Murf AI for high-quality voices
-    if (murfTTS.isAvailable() && murfTTS.supportsLanguage(langCode)) {
       try {
-        console.log('🎤 Using Murf AI TTS (Premium quality voices!)');
-        await murfTTS.speak(text, langCode);
-        return;
-      } catch (murfError) {
-        console.warn('Murf AI TTS failed:', murfError);
+        // Try ElevenLabs (premium quality)
+        if (elevenLabsTTS.isAvailable()) {
+          console.log('🎤 Using ElevenLabs TTS (Premium)');
+          await elevenLabsTTS.speak(text, langCode);
+          return;
+        }
+      } catch (elevenLabsError) {
+        console.warn('ElevenLabs TTS failed:', elevenLabsError);
       }
-    }
-
-    try {
-      // THIRD: Try Google Cloud TTS for Indian languages
-      if (isIndianLanguage && googleCloudTTS.isAvailable() && googleCloudTTS.supportsLanguage(langCode)) {
-        console.log('☁️ Using Google Cloud TTS (Fallback for Indian languages)');
-        await googleCloudTTS.speak(text, langCode);
+      
+      try {
+        // Try Pollinations.AI TTS (FREE, works for English)
+        console.log('🌸 Using Pollinations.AI TTS (FREE - No API Key!)');
+        await pollinationsTTS.speak(text);
         return;
+      } catch (pollinationsError) {
+        console.warn('Pollinations TTS failed:', pollinationsError);
       }
-    } catch (googleCloudError) {
-      console.warn('Google Cloud TTS failed:', googleCloudError);
-    }
-
-    try {
-      // Try ElevenLabs (premium quality)
-      if (elevenLabsTTS.isAvailable()) {
-        console.log('🎤 Using ElevenLabs TTS (Premium)');
-        await elevenLabsTTS.speak(text, langCode);
-        return;
-      }
-    } catch (elevenLabsError) {
-      console.warn('ElevenLabs TTS failed:', elevenLabsError);
-    }
-    
-    try {
-      // Try Pollinations.AI TTS (FREE, works for English)
-      console.log('🌸 Using Pollinations.AI TTS (FREE - No API Key!)');
-      await pollinationsTTS.speak(text);
-      return;
-    } catch (pollinationsError) {
-      console.warn('Pollinations TTS failed:', pollinationsError);
-    }
-    
-    try {
+      
       // Fallback to browser TTS
       console.log('🔊 Using Browser TTS (Free)');
       await browserTTS.speak(text, langCode);
@@ -628,71 +628,71 @@ export function useCloudTTS() {
     const baseLang = langCode.split('-')[0];
     const isIndianLanguage = ['te', 'hi', 'ta', 'kn', 'ml', 'bn', 'gu', 'mr', 'pa', 'or'].includes(baseLang);
 
-    // FIRST: Try Sarvam AI for Indian languages (BEST for Telugu, Hindi, Tamil!)
-    if (isIndianLanguage && sarvamTTS.isAvailable() && sarvamTTS.supportsLanguage(langCode)) {
-      try {
-        console.log('🇮🇳 Using Sarvam AI TTS for analysis (Native Indian voices!)');
-        await sarvamTTS.speak(textToSpeak, langCode);
-        return;
-      } catch (sarvamError) {
-        console.warn('Sarvam AI TTS failed for analysis:', sarvamError);
+    try {
+      // FIRST: Try Sarvam AI for Indian languages (BEST for Telugu, Hindi, Tamil!)
+      if (isIndianLanguage && sarvamTTS.isAvailable() && sarvamTTS.supportsLanguage(langCode)) {
+        try {
+          console.log('🇮🇳 Using Sarvam AI TTS for analysis (Native Indian voices!)');
+          await sarvamTTS.speak(textToSpeak, langCode);
+          return;
+        } catch (sarvamError) {
+          console.warn('Sarvam AI TTS failed for analysis:', sarvamError);
+        }
       }
-    }
 
-    // SECOND: Try Murf AI for high-quality voices
-    if (murfTTS.isAvailable() && murfTTS.supportsLanguage(langCode)) {
-      try {
-        console.log('🎤 Using Murf AI TTS for analysis (Premium quality!)');
-        await murfTTS.speak(textToSpeak, langCode);
-        return;
-      } catch (murfError) {
-        console.warn('Murf AI TTS failed for analysis:', murfError);
+      // SECOND: Try Murf AI for high-quality voices
+      if (murfTTS.isAvailable() && murfTTS.supportsLanguage(langCode)) {
+        try {
+          console.log('🎤 Using Murf AI TTS for analysis (Premium quality!)');
+          await murfTTS.speak(textToSpeak, langCode);
+          return;
+        } catch (murfError) {
+          console.warn('Murf AI TTS failed for analysis:', murfError);
+        }
       }
-    }
 
-    // THIRD: Try Google Cloud TTS for Indian languages
-    if (isIndianLanguage && googleCloudTTS.isAvailable()) {
-      try {
-        console.log('☁️ Using Google Cloud TTS for analysis (Fallback)');
-        await googleCloudTTS.speak(textToSpeak, langCode);
-        return;
-      } catch (googleCloudError) {
-        console.warn('Google Cloud TTS failed for analysis:', googleCloudError);
+      // THIRD: Try Google Cloud TTS for Indian languages
+      if (isIndianLanguage && googleCloudTTS.isAvailable()) {
+        try {
+          console.log('☁️ Using Google Cloud TTS for analysis (Fallback)');
+          await googleCloudTTS.speak(textToSpeak, langCode);
+          return;
+        } catch (googleCloudError) {
+          console.warn('Google Cloud TTS failed for analysis:', googleCloudError);
+        }
       }
-    }
 
-    try {
-      // Try ElevenLabs (premium quality)
-      if (elevenLabsTTS.isAvailable()) {
-        console.log('🎤 Using ElevenLabs TTS for analysis (Premium)');
-        await elevenLabsTTS.speak(textToSpeak, langCode);
-        return;
+      try {
+        // Try ElevenLabs (premium quality)
+        if (elevenLabsTTS.isAvailable()) {
+          console.log('🎤 Using ElevenLabs TTS for analysis (Premium)');
+          await elevenLabsTTS.speak(textToSpeak, langCode);
+          return;
+        }
+      } catch (elevenLabsError) {
+        console.warn('ElevenLabs TTS failed for analysis, trying Pollinations.AI:', elevenLabsError);
       }
-    } catch (elevenLabsError) {
-      console.warn('ElevenLabs TTS failed for analysis, trying Pollinations.AI:', elevenLabsError);
-    }
-    
-    try {
-      // Try Pollinations.AI TTS (FREE, no API key!)
-      console.log('🌸 Using Pollinations.AI TTS for analysis (FREE)');
-      await pollinationsTTS.speak(textToSpeak);
-      return;
-    } catch (pollinationsError) {
-      console.warn('Pollinations TTS failed for analysis, trying Google TTS:', pollinationsError);
-    }
-    
-    try {
-      // Try Google Translate TTS (great for Indian languages)
-      if (googleTTS.isAvailable(langCode)) {
-        console.log('🌐 Using Google Translate TTS for analysis (Free, Indian languages)');
-        await googleTTS.speak(textToSpeak, langCode);
+      
+      try {
+        // Try Pollinations.AI TTS (FREE, no API key!)
+        console.log('🌸 Using Pollinations.AI TTS for analysis (FREE)');
+        await pollinationsTTS.speak(textToSpeak);
         return;
+      } catch (pollinationsError) {
+        console.warn('Pollinations TTS failed for analysis, trying Google TTS:', pollinationsError);
       }
-    } catch (googleError) {
-      console.warn('Google TTS failed for analysis, falling back to browser:', googleError);
-    }
-    
-    try {
+      
+      try {
+        // Try Google Translate TTS (great for Indian languages)
+        if (googleTTS.isAvailable(langCode)) {
+          console.log('🌐 Using Google Translate TTS for analysis (Free, Indian languages)');
+          await googleTTS.speak(textToSpeak, langCode);
+          return;
+        }
+      } catch (googleError) {
+        console.warn('Google TTS failed for analysis, falling back to browser:', googleError);
+      }
+      
       // Fallback to browser TTS
       console.log('🔊 Using Browser TTS for analysis (Free)');
       await browserTTS.speak(textToSpeak, langCode);

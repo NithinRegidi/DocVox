@@ -22,53 +22,82 @@ const VOICE_LANGUAGES: Record<string, string> = {
   'english': 'en-IN',
 };
 
-// Intent patterns - NO AI needed, simple string matching
-const INTENT_PATTERNS = {
+// Intent patterns - Simplified for better matching
+// Priority: Single words first, then phrases
+// All lowercase for matching
+const INTENT_PATTERNS: Record<string, string[]> = {
+  // HIGH PRIORITY - Single word triggers (most reliable)
   READ_SUMMARY: [
-    'read summary', 'read the summary', 'summary', 'tell me summary',
-    'what is this', 'what\'s this', 'what does it say', 'read it',
-    'explain this', 'tell me about this', 'what is in this document',
-    'summarize', 'give summary', 'document summary'
+    'summary', 'summarize', 'summarise', 'summery', 'some marie', 'some mary', 'samari',
+    'read', 'explain', 'tell',
   ],
   GET_DEADLINES: [
-    'deadline', 'deadlines', 'due date', 'due dates', 'when is it due',
-    'important dates', 'dates', 'when', 'expiry', 'expires',
-    'last date', 'submission date', 'payment date'
+    'deadline', 'deadlines', 'date', 'dates', 'when', 'due', 'expiry', 'expires', 'validity',
   ],
   GET_KEY_INFO: [
-    'key info', 'key information', 'important info', 'important details',
-    'main points', 'highlights', 'key points', 'important points',
-    'what should i know', 'extracted info', 'details'
+    'important', 'key', 'info', 'information', 'details', 'highlights', 'points', 'main',
+  ],
+  WARNINGS: [
+    'warning', 'warnings', 'problem', 'problems', 'issue', 'issues', 'concern', 'concerns', 'risk', 'risks',
   ],
   GET_TYPE: [
-    'document type', 'type of document', 'what type', 'what kind',
-    'is this a', 'what document'
+    'type', 'kind', 'category', 'classify', 'classification',
   ],
   GET_ACTIONS: [
-    'action', 'actions', 'what to do', 'what should i do',
-    'next steps', 'required actions', 'todo', 'to do'
+    'action', 'actions', 'todo', 'step', 'steps', 'do',
   ],
   GET_AMOUNT: [
-    'amount', 'money', 'price', 'cost', 'payment', 'fee',
-    'how much', 'total', 'rupees', 'dollars'
-  ],
-  TRANSLATE: [
-    'translate to', 'speak in', 'say in', 'convert to',
-    'in telugu', 'in hindi', 'in tamil', 'in kannada',
-    'in malayalam', 'in marathi', 'in bengali', 'in gujarati',
-    'telugu lo', 'hindi mein', 'tamil la'
+    'amount', 'money', 'price', 'cost', 'fee', 'payment', 'pay', 'total', 'rupees', 'dollars',
   ],
   STOP: [
-    'stop', 'quiet', 'silence', 'shut up', 'enough', 'ok stop',
-    'stop speaking', 'stop talking', 'pause', 'cancel'
+    'stop', 'pause', 'quiet', 'silence', 'cancel', 'enough', 'ok', 'okay', 'thanks', 'thank',
   ],
   HELP: [
-    'help', 'commands', 'what can you do', 'options',
-    'available commands', 'voice commands', 'how to use'
+    'help', 'commands', 'options', 'how', 'what can',
   ],
   REPEAT: [
-    'repeat', 'again', 'say again', 'one more time', 'repeat that'
-  ]
+    'repeat', 'again', 'pardon', 'sorry', 'once more',
+  ],
+  DOWNLOAD: [
+    'download', 'save', 'export', 'pdf',
+  ],
+  SHARE: [
+    'share', 'send', 'link',
+  ],
+  READ_FULL: [
+    'full', 'everything', 'all', 'entire', 'complete', 'whole',
+  ],
+  TRANSLATE: [
+    'translate', 'telugu', 'hindi', 'tamil', 'kannada', 'malayalam', 'language',
+  ],
+};
+
+// Common speech recognition mistakes and their corrections
+const SPEECH_CORRECTIONS: Record<string, string> = {
+  'some marie': 'summary',
+  'some mary': 'summary',
+  'some merry': 'summary',
+  'summery': 'summary',
+  'samari': 'summary',
+  'samarie': 'summary',
+  'dead line': 'deadline',
+  'dead lines': 'deadlines',
+  'dad lines': 'deadlines',
+  'datelines': 'deadlines',
+  'warning': 'warnings',
+  'worn ings': 'warnings',
+  'prob lems': 'problems',
+  'down load': 'download',
+  'dawn load': 'download',
+  'sher': 'share',
+  'sheer': 'share',
+  'trans late': 'translate',
+  'repete': 'repeat',
+  're pete': 'repeat',
+  'stopp': 'stop',
+  'stap': 'stop',
+  'halp': 'help',
+  'held': 'help',
 };
 
 export type VoiceIntent = 
@@ -82,6 +111,10 @@ export type VoiceIntent =
   | 'STOP' 
   | 'HELP'
   | 'REPEAT'
+  | 'DOWNLOAD'
+  | 'SHARE'
+  | 'READ_FULL'
+  | 'WARNINGS'
   | 'UNKNOWN';
 
 export interface VoiceCommandResult {
@@ -98,7 +131,7 @@ interface UseVoiceCommandsProps {
   aiAnalysis?: AIAnalysis | null;
   extractedText?: string;
   documentType?: string;
-  onSpeak: (text: string, options?: { language?: string }) => Promise<void>;
+  onSpeak: (text: string, options?: { languageCode?: string }) => Promise<void>;
   onStop: () => void;
   onTranslate?: (targetLang: string) => void;
   currentLanguage?: string;
@@ -117,6 +150,7 @@ export const useVoiceCommands = ({
   const [lastCommand, setLastCommand] = useState<VoiceCommandResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const lastResponseRef = useRef<string>('');
+  const [commandLanguage, setCommandLanguage] = useState<string>('en-IN'); // Language for voice commands
 
   // Use existing speech recognition hook
   const {
@@ -126,24 +160,59 @@ export const useVoiceCommands = ({
     stopListening,
     error: speechError,
     isSupported
-  } = useSpeechRecognition({
-    language: 'en-IN', // Commands in English for reliability
-    continuous: false,
-    interimResults: false
-  });
+  } = useSpeechRecognition();
 
-  // Detect intent from transcript - NO API CALLS, pure pattern matching
-  const detectIntent = useCallback((text: string): { intent: VoiceIntent; params: any } => {
-    const lowerText = text.toLowerCase().trim();
+  // Apply speech corrections for common recognition errors
+  const correctSpeech = useCallback((text: string): string => {
+    let corrected = text.toLowerCase().trim();
     
-    // Check each intent pattern
+    // Apply known corrections
+    for (const [mistake, correction] of Object.entries(SPEECH_CORRECTIONS)) {
+      corrected = corrected.replace(new RegExp(mistake, 'gi'), correction);
+    }
+    
+    return corrected;
+  }, []);
+
+  // Calculate similarity between two words (simple Levenshtein-inspired)
+  const wordSimilarity = useCallback((word1: string, word2: string): number => {
+    if (word1 === word2) return 1;
+    if (word1.includes(word2) || word2.includes(word1)) return 0.8;
+    
+    // Check if words start with same letters
+    const minLen = Math.min(word1.length, word2.length);
+    let matchCount = 0;
+    for (let i = 0; i < minLen; i++) {
+      if (word1[i] === word2[i]) matchCount++;
+      else break;
+    }
+    
+    if (matchCount >= 3) return 0.6; // First 3+ chars match
+    return 0;
+  }, []);
+
+  // Detect intent from transcript - Smart pattern matching
+  const detectIntent = useCallback((text: string): { intent: VoiceIntent; params: any } => {
+    // Step 1: Clean and correct the text
+    const correctedText = correctSpeech(text);
+    const words = correctedText.split(/\s+/).filter(w => w.length > 0);
+    
+    console.log('🎤 Voice Command - Original:', text);
+    console.log('🎤 Voice Command - Corrected:', correctedText);
+    console.log('🎤 Voice Command - Words:', words);
+
+    // Step 2: Try exact word match first (highest priority)
     for (const [intent, patterns] of Object.entries(INTENT_PATTERNS)) {
       for (const pattern of patterns) {
-        if (lowerText.includes(pattern)) {
-          // Special handling for TRANSLATE - extract target language
+        const patternLower = pattern.toLowerCase();
+        
+        // Check if any word exactly matches the pattern
+        if (words.includes(patternLower)) {
+          console.log('✅ Exact word match:', intent, '←', patternLower);
+          
           if (intent === 'TRANSLATE') {
             const detectedLang = Object.keys(VOICE_LANGUAGES).find(lang => 
-              lowerText.includes(lang)
+              correctedText.includes(lang)
             );
             return {
               intent: intent as VoiceIntent,
@@ -157,9 +226,52 @@ export const useVoiceCommands = ({
         }
       }
     }
+
+    // Step 3: Try phrase/substring match
+    for (const [intent, patterns] of Object.entries(INTENT_PATTERNS)) {
+      for (const pattern of patterns) {
+        const patternLower = pattern.toLowerCase();
+        
+        if (correctedText.includes(patternLower)) {
+          console.log('✅ Phrase match:', intent, '←', patternLower);
+          
+          if (intent === 'TRANSLATE') {
+            const detectedLang = Object.keys(VOICE_LANGUAGES).find(lang => 
+              correctedText.includes(lang)
+            );
+            return {
+              intent: intent as VoiceIntent,
+              params: {
+                language: detectedLang || 'hindi',
+                languageCode: VOICE_LANGUAGES[detectedLang || 'hindi']
+              }
+            };
+          }
+          return { intent: intent as VoiceIntent, params: {} };
+        }
+      }
+    }
+
+    // Step 4: Try fuzzy matching for single words
+    for (const word of words) {
+      if (word.length < 3) continue; // Skip very short words
+      
+      for (const [intent, patterns] of Object.entries(INTENT_PATTERNS)) {
+        for (const pattern of patterns) {
+          const patternLower = pattern.toLowerCase();
+          const similarity = wordSimilarity(word, patternLower);
+          
+          if (similarity >= 0.6) {
+            console.log('✅ Fuzzy match:', intent, '← word:', word, '~ pattern:', patternLower);
+            return { intent: intent as VoiceIntent, params: {} };
+          }
+        }
+      }
+    }
     
+    console.log('❌ No intent matched for:', correctedText);
     return { intent: 'UNKNOWN', params: {} };
-  }, []);
+  }, [correctSpeech, wordSimilarity]);
 
   // Generate response based on intent - uses CACHED data only, NO API calls
   const generateResponse = useCallback((intent: VoiceIntent, params: any): string => {
@@ -223,13 +335,34 @@ export const useVoiceCommands = ({
         return "Okay, stopping.";
 
       case 'HELP':
-        return "You can say: Read the summary, What are the deadlines, Tell me key information, What type of document is this, What actions should I take, Stop, or Repeat.";
+        return "You can speak in English, Telugu, Hindi, or Tamil! Try saying: Read the summary, What are the deadlines, Key information, Warnings, Download PDF, Share, or Stop. In Telugu, say: సారాంశం చదవండి. In Hindi, say: सारांश पढ़ो.";
 
       case 'REPEAT':
         return lastResponseRef.current || "Nothing to repeat yet. Try asking me something first.";
 
+      case 'DOWNLOAD':
+        return "Opening download option. Please click the Download PDF button to save the document.";
+
+      case 'SHARE':
+        return "Opening share option. Please click the Share button to share this document.";
+
+      case 'READ_FULL':
+        if (extractedText) {
+          // Return first 500 chars to avoid very long speech
+          const preview = extractedText.substring(0, 500);
+          return `Here's the document text: ${preview}${extractedText.length > 500 ? '... The document continues further.' : ''}`;
+        }
+        return "No text extracted from this document yet.";
+
+      case 'WARNINGS':
+        if (aiAnalysis?.warnings && aiAnalysis.warnings.length > 0) {
+          const warnings = aiAnalysis.warnings.slice(0, 3).join('. Also, ');
+          return `Warning! ${warnings}`;
+        }
+        return "No warnings or concerns found in this document.";
+
       case 'UNKNOWN':
-        return "Sorry, I didn't understand that. Say 'help' to hear available commands.";
+        return "Sorry, I didn't understand that. Say 'help' to hear available commands. You can speak in English, Telugu, Hindi, or Tamil.";
 
       default:
         return "I'm not sure how to help with that.";
@@ -240,11 +373,14 @@ export const useVoiceCommands = ({
   const processCommand = useCallback(async (commandText: string) => {
     if (!commandText.trim()) return null;
 
+    console.log('🎤 Processing voice command:', commandText);
     setIsProcessing(true);
     
     try {
       const { intent, params } = detectIntent(commandText);
+      console.log('🎯 Detected intent:', intent, 'params:', params);
       const response = generateResponse(intent, params);
+      console.log('💬 Generated response:', response.substring(0, 100) + '...');
       
       const result: VoiceCommandResult = {
         intent,
@@ -263,30 +399,47 @@ export const useVoiceCommands = ({
       // Execute the command
       if (intent === 'STOP') {
         onStop();
+        // Don't wait for anything, just stop immediately
+        setIsProcessing(false);
+        return result;
       } else if (intent === 'TRANSLATE' && onTranslate) {
         onTranslate(params.languageCode || 'hi-IN');
-        await onSpeak(response, { language: currentLanguage });
+        // Don't await - let it play in background
+        // Use English for response since our responses are in English
+        onSpeak(response, { languageCode: 'en-IN' }).catch(() => {});
       } else {
-        await onSpeak(response, { language: currentLanguage });
+        // Don't await - let it play in background, user can stop anytime
+        // IMPORTANT: Always use English for voice command responses
+        // because our responses are written in English
+        onSpeak(response, { languageCode: 'en-IN' }).catch(() => {});
       }
 
       return result;
     } finally {
-      setIsProcessing(false);
+      // Small delay to show processing state, then clear it
+      setTimeout(() => setIsProcessing(false), 300);
     }
   }, [detectIntent, generateResponse, onSpeak, onStop, onTranslate, currentLanguage]);
 
-  // Start listening for commands
-  const startCommandMode = useCallback(() => {
+  // Start listening for commands with selected language
+  const startCommandMode = useCallback((language?: string) => {
+    const lang = language || commandLanguage;
     setIsCommandMode(true);
-    startListening();
-  }, [startListening]);
+    console.log('🎤 Starting voice commands in language:', lang);
+    startListening({ language: lang, continuous: false, interimResults: true });
+  }, [startListening, commandLanguage]);
 
   // Stop listening
   const stopCommandMode = useCallback(() => {
     setIsCommandMode(false);
     stopListening();
   }, [stopListening]);
+
+  // Set command language
+  const setVoiceLanguage = useCallback((lang: string) => {
+    setCommandLanguage(lang);
+    console.log('🌐 Voice command language set to:', lang);
+  }, []);
 
   // Process transcript when it changes
   const handleTranscript = useCallback(async () => {
@@ -305,16 +458,19 @@ export const useVoiceCommands = ({
     transcript,
     speechError,
     isSupported,
+    commandLanguage,
     
     // Actions
     startCommandMode,
     stopCommandMode,
     processCommand,
     handleTranscript,
+    setVoiceLanguage,
     
     // Utils
     detectIntent,
-    availableCommands: Object.keys(INTENT_PATTERNS)
+    availableCommands: Object.keys(INTENT_PATTERNS),
+    availableLanguages: VOICE_LANGUAGES
   };
 };
 
