@@ -12,14 +12,14 @@ export interface MurfVoice {
 }
 
 // Murf AI supported languages with voice IDs
-// Using Falcon model voices - these are the actual voice names from Murf API
-// Format: voiceId can be just the name (e.g., "natalie") or full ID (e.g., "en-US-natalie")
+// Using Falcon model voices - voice IDs are just the name in lowercase
+// Refer to: https://murf.ai/api/docs/voices-styles/voice-library
 export const MURF_LANGUAGES: Record<string, { name: string; voices: MurfVoice[] }> = {
   'te-IN': {
     name: 'Telugu',
     voices: [
+      // Murf may not have Telugu voices - fallback will handle this
       { id: 'sanjana', name: 'Sanjana', language: 'te-IN', gender: 'female', locale: 'te-IN' },
-      { id: 'suresh', name: 'Suresh', language: 'te-IN', gender: 'male', locale: 'te-IN' },
     ]
   },
   'hi-IN': {
@@ -27,66 +27,57 @@ export const MURF_LANGUAGES: Record<string, { name: string; voices: MurfVoice[] 
     voices: [
       { id: 'ananya', name: 'Ananya', language: 'hi-IN', gender: 'female', locale: 'hi-IN' },
       { id: 'arjun', name: 'Arjun', language: 'hi-IN', gender: 'male', locale: 'hi-IN' },
-      { id: 'neha', name: 'Neha', language: 'hi-IN', gender: 'female', locale: 'hi-IN' },
     ]
   },
   'ta-IN': {
     name: 'Tamil',
     voices: [
       { id: 'kavitha', name: 'Kavitha', language: 'ta-IN', gender: 'female', locale: 'ta-IN' },
-      { id: 'kumar', name: 'Kumar', language: 'ta-IN', gender: 'male', locale: 'ta-IN' },
     ]
   },
   'kn-IN': {
     name: 'Kannada',
     voices: [
       { id: 'shreya', name: 'Shreya', language: 'kn-IN', gender: 'female', locale: 'kn-IN' },
-      { id: 'ravi', name: 'Ravi', language: 'kn-IN', gender: 'male', locale: 'kn-IN' },
     ]
   },
   'ml-IN': {
     name: 'Malayalam',
     voices: [
       { id: 'priya', name: 'Priya', language: 'ml-IN', gender: 'female', locale: 'ml-IN' },
-      { id: 'mohan', name: 'Mohan', language: 'ml-IN', gender: 'male', locale: 'ml-IN' },
     ]
   },
   'bn-IN': {
     name: 'Bengali',
     voices: [
       { id: 'tanushree', name: 'Tanushree', language: 'bn-IN', gender: 'female', locale: 'bn-IN' },
-      { id: 'anirban', name: 'Anirban', language: 'bn-IN', gender: 'male', locale: 'bn-IN' },
     ]
   },
   'gu-IN': {
     name: 'Gujarati',
     voices: [
       { id: 'mira', name: 'Mira', language: 'gu-IN', gender: 'female', locale: 'gu-IN' },
-      { id: 'jay', name: 'Jay', language: 'gu-IN', gender: 'male', locale: 'gu-IN' },
     ]
   },
   'mr-IN': {
     name: 'Marathi',
     voices: [
       { id: 'sakshi', name: 'Sakshi', language: 'mr-IN', gender: 'female', locale: 'mr-IN' },
-      { id: 'rahul', name: 'Rahul', language: 'mr-IN', gender: 'male', locale: 'mr-IN' },
     ]
   },
   'en-IN': {
     name: 'English (India)',
     voices: [
-      { id: 'ira', name: 'Ira', language: 'en-IN', gender: 'female', locale: 'en-IN' },
-      { id: 'neil', name: 'Neil', language: 'en-IN', gender: 'male', locale: 'en-IN' },
       { id: 'aarav', name: 'Aarav', language: 'en-IN', gender: 'male', locale: 'en-IN' },
+      { id: 'indu', name: 'Indu', language: 'en-IN', gender: 'female', locale: 'en-IN' },
     ]
   },
   'en-US': {
     name: 'English (US)',
     voices: [
       { id: 'natalie', name: 'Natalie', language: 'en-US', gender: 'female', locale: 'en-US' },
-      { id: 'matthew', name: 'Matthew', language: 'en-US', gender: 'male', locale: 'en-US' },
-      { id: 'sarah', name: 'Sarah', language: 'en-US', gender: 'female', locale: 'en-US' },
-      { id: 'james', name: 'James', language: 'en-US', gender: 'male', locale: 'en-US' },
+      { id: 'ken', name: 'Ken', language: 'en-US', gender: 'male', locale: 'en-US' },
+      { id: 'julia', name: 'Julia', language: 'en-US', gender: 'female', locale: 'en-US' },
     ]
   },
 };

@@ -764,8 +764,8 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
 
                 {/* Voice Command Button - Token-Free Navigation */}
                 <VoiceCommandButton
-                  aiAnalysis={analysis}
-                  extractedText={text}
+                  aiAnalysis={displayedAnalysis}
+                  extractedText={displayedText}
                   documentType={displayedAnalysis?.documentType || documentType}
                   onSpeak={speak}
                   onStop={stop}

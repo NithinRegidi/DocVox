@@ -569,19 +569,35 @@ export function useCloudTTS() {
       
       try {
         // Try Pollinations.AI TTS (FREE, works for English)
-        console.log('🌸 Using Pollinations.AI TTS (FREE - No API Key!)');
-        await pollinationsTTS.speak(text);
-        return;
+        if (!isIndianLanguage) {
+          console.log('🌸 Using Pollinations.AI TTS (FREE - No API Key!)');
+          await pollinationsTTS.speak(text);
+          return;
+        }
       } catch (pollinationsError) {
         console.warn('Pollinations TTS failed:', pollinationsError);
       }
       
-      // Fallback to browser TTS
-      console.log('🔊 Using Browser TTS (Free)');
-      await browserTTS.speak(text, langCode);
-    } catch (browserError) {
-      console.error('All TTS methods failed:', browserError);
-      throw new Error('Text-to-speech is not available. Please check your browser settings.');
+      // Final fallback to browser TTS - always available
+      try {
+        console.log('🔊 Using Browser TTS (Free, supports Indian languages)');
+        await browserTTS.speak(text, langCode);
+        return;
+      } catch (browserError) {
+        console.error('Browser TTS failed:', browserError);
+      }
+      
+      // If all else fails, throw error
+      throw new Error('All TTS providers failed. Please check your internet connection or browser settings.');
+    } catch (error) {
+      console.error('TTS error:', error);
+      // Last resort - try browser TTS one more time
+      try {
+        console.log('🔊 Final attempt: Browser TTS');
+        await browserTTS.speak(text, langCode);
+      } catch {
+        throw new Error('Text-to-speech is not available. Please check your browser settings.');
+      }
     } finally {
       setIsSpeaking(false);
     }
