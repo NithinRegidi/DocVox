@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { FileText, Copy, Check, AlertCircle, CheckCircle2, Clock, Download, Share2, Volume2, VolumeX, Pause, Play, Calendar, DollarSign, Mail, Phone, Hash, User, FileCheck, Lightbulb, Target, Shield, MessageCircle, Send, Languages, Loader2 } from "lucide-react";
+import { FileText, Copy, Check, AlertCircle, CheckCircle2, Clock, Download, Share2, Volume2, VolumeX, Pause, Play, Calendar, DollarSign, Mail, Phone, Hash, User, FileCheck, Lightbulb, Target, MessageCircle, Send, Languages } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { exportToPDF } from "@/lib/pdfExport";
@@ -14,6 +14,7 @@ import LanguageSelector from "@/components/LanguageSelector";
 import ReminderManager from "@/components/ReminderManager";
 import TranslationSelector from "@/components/TranslationSelector";
 import DocumentChat from "@/components/DocumentChat";
+import VoiceCommandButton from "@/components/VoiceCommandButton";
 import { translateText, translateAnalysis, getLanguageByCode, isTranslationAvailable, TranslatedAnalysis } from "@/lib/translation";
 
 interface ExtractedTextDisplayProps {
@@ -114,10 +115,7 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
 
   const handleSpeak = async () => {
     // If already in the middle of starting speech, ignore
-    if (isSpeakInProgress) {
-      console.log('🔊 Speak already in progress, ignoring click');
-      return;
-    }
+    if (isSpeakInProgress) return;
 
     if (isSpeaking && !isPaused) {
       pause();
@@ -139,9 +137,6 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
       // Check if voice is available for the selected language
       const voiceAvailable = hasVoiceForLanguage(selectedLanguage);
       
-      console.log('🔊 handleSpeak called');
-      console.log('  - selectedLanguage:', selectedLanguage);
-      console.log('  - baseLang:', baseLang);
       console.log('  - needsTranslation:', needsTranslation);
       console.log('  - voiceAvailable:', voiceAvailable);
       
@@ -765,6 +760,16 @@ const ExtractedTextDisplay = ({ text, documentType, analysis, fileName, createdA
                   selectedLanguage={selectedLanguage}
                   onLanguageChange={setLanguage}
                   availableLanguages={availableLanguages}
+                />
+
+                {/* Voice Command Button - Token-Free Navigation */}
+                <VoiceCommandButton
+                  aiAnalysis={analysis}
+                  extractedText={text}
+                  documentType={displayedAnalysis?.documentType || documentType}
+                  onSpeak={speak}
+                  onStop={stop}
+                  currentLanguage={selectedLanguage}
                   disabled={isSpeaking}
                 />
                 <div className="flex gap-1">
