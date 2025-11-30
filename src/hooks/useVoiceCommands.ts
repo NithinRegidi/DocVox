@@ -35,6 +35,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'సారాంశం', 'సారాంశ', 'చదవండి', 'చదువు', 'చెప్పండి', 'చెప్పు',
     'saaramsam', 'saaram', 'chadavandi', 'chepandi', 'cheppu',
+    // Tamil
+    'சுருக்கம்', 'சாரம்', 'படிக்க', 'சொல்', 'விளக்கு',
+    'surukkam', 'saaram', 'padikka', 'sol', 'vilakku',
+    // Kannada
+    'ಸಾರಾಂಶ', 'ಓದು', 'ಹೇಳು', 'ವಿವರಿಸು',
+    'saaramsha', 'odu', 'helu', 'vivarisu',
+    // Malayalam
+    'സംഗ്രഹം', 'വായിക്കുക', 'പറയുക', 'വിശദീകരിക്കുക',
+    'samgraham', 'vaayikkuka', 'parayuka', 'vishadeekarikkuka',
+    // Bengali
+    'সারসংক্ষেপ', 'সারাংশ', 'পড়ো', 'বলো', 'ব্যাখ্যা',
+    'sarsankhep', 'saransh', 'poro', 'bolo', 'byakhya',
   ],
   GET_DEADLINES: [
     // English
@@ -42,6 +54,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'గడువు', 'గడువులు', 'తేదీ', 'తేదీలు', 'ఎప్పుడు', 'కాలం',
     'gaduvu', 'teedi', 'teduvu', 'appudu', 'kalam',
+    // Tamil
+    'காலக்கெடு', 'தேதி', 'எப்போது', 'காலம்', 'முடிவு',
+    'kaalakkedu', 'thethi', 'eppothu', 'kaalam', 'mudivu',
+    // Kannada
+    'ಗಡುವು', 'ದಿನಾಂಕ', 'ಯಾವಾಗ', 'ಅವಧಿ',
+    'gaduvu', 'dinaanka', 'yaavaaga', 'avadhi',
+    // Malayalam
+    'അവസാന തീയതി', 'തീയതി', 'എപ്പോൾ', 'കാലാവധി',
+    'avasaana theeyathi', 'theeyathi', 'eppol', 'kaalaavadhi',
+    // Bengali
+    'সময়সীমা', 'তারিখ', 'কখন', 'শেষ তারিখ',
+    'somoyseema', 'tarikh', 'kokhon', 'shesh tarikh',
   ],
   GET_KEY_INFO: [
     // English
@@ -49,6 +73,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'ముఖ్యమైన', 'ముఖ్యమైనవి', 'సమాచారం', 'విషయాలు', 'వివరాలు',
     'mukhya', 'mukhyam', 'samacharam', 'vishayalu', 'vivaraalu',
+    // Tamil
+    'முக்கியம்', 'முக்கிய', 'தகவல்', 'விவரங்கள்', 'புள்ளிகள்',
+    'mukkiyam', 'mukkiya', 'thagaval', 'vivarangal', 'pulligal',
+    // Kannada
+    'ಮುಖ್ಯ', 'ಮಾಹಿತಿ', 'ವಿವರಗಳು', 'ಅಂಶಗಳು',
+    'mukhya', 'maahiti', 'vivaragalu', 'amshagalu',
+    // Malayalam
+    'പ്രധാനം', 'വിവരങ്ങൾ', 'വിശദാംശങ്ങൾ', 'പോയിന്റുകൾ',
+    'pradhaanam', 'vivarangal', 'vishadaamshangal', 'pointukal',
+    // Bengali
+    'গুরুত্বপূর্ণ', 'তথ্য', 'বিবরণ', 'মূল বিষয়',
+    'gurutwopurno', 'tothyo', 'bibaron', 'mul bishoy',
   ],
   WARNINGS: [
     // English
@@ -56,6 +92,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'హెచ్చరికలు', 'హెచ్చరిక', 'సమస్య', 'సమస్యలు', 'ఆపద', 'ఖతరా',
     'hechcharika', 'samasya', 'apada', 'khatara',
+    // Tamil
+    'எச்சரிக்கை', 'பிரச்சினை', 'சிக்கல்', 'ஆபத்து',
+    'echarikkai', 'pirachchinai', 'sikkal', 'aapathu',
+    // Kannada
+    'ಎಚ್ಚರಿಕೆ', 'ಸಮಸ್ಯೆ', 'ಅಪಾಯ', 'ತೊಂದರೆ',
+    'echcharike', 'samasye', 'apaaya', 'tondare',
+    // Malayalam
+    'മുന്നറിയിപ്പ്', 'പ്രശ്നം', 'അപകടം',
+    'munnariyippu', 'prashnam', 'apakadam',
+    // Bengali
+    'সতর্কতা', 'সমস্যা', 'ঝুঁকি', 'বিপদ',
+    'sotorkota', 'somosya', 'jhunki', 'bipod',
   ],
   GET_TYPE: [
     // English
@@ -63,6 +111,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'రకం', 'రకాలు', 'విధమైన', 'వర్గం', 'రకమేది',
     'rakam', 'vidha', 'vargam',
+    // Tamil
+    'வகை', 'பிரிவு', 'வகைப்படுத்து',
+    'vagai', 'pirivu', 'vagaipaduthu',
+    // Kannada
+    'ವಿಧ', 'ಪ್ರಕಾರ', 'ವರ್ಗ',
+    'vidha', 'prakaara', 'varga',
+    // Malayalam
+    'തരം', 'വിഭാഗം', 'തരം തിരിക്കുക',
+    'tharam', 'vibhaagam', 'tharam thirikkuka',
+    // Bengali
+    'ধরণ', 'প্রকার', 'শ্রেণী',
+    'dhoron', 'prokar', 'shreni',
   ],
   GET_ACTIONS: [
     // English
@@ -70,6 +130,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'చేయవలసిన', 'చేయాలి', 'క్రమం', 'పయనాలు', 'సూచన',
     'cheya', 'cheyavalu', 'kramamaa', 'payana', 'suuchana',
+    // Tamil
+    'செயல்', 'செய்ய வேண்டியவை', 'படி', 'என்ன செய்ய',
+    'seyal', 'seyya vendiyavai', 'padi', 'enna seyya',
+    // Kannada
+    'ಕ್ರಿಯೆ', 'ಹೆಜ್ಜೆ', 'ಏನು ಮಾಡಬೇಕು',
+    'kriye', 'hejje', 'enu maadabeku',
+    // Malayalam
+    'നടപടി', 'ഘട്ടങ്ങൾ', 'എന്ത് ചെയ്യണം',
+    'nadapadi', 'ghattangal', 'enthu cheyyaNam',
+    // Bengali
+    'কাজ', 'পদক্ষেপ', 'কী করতে হবে',
+    'kaaj', 'podokkhep', 'ki korte hobe',
   ],
   GET_AMOUNT: [
     // English
@@ -77,6 +149,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'అంతా', 'ఆ', 'ధర', 'ధరలు', 'ఖర్చు', 'సరిపెట్టుకో', 'చెల్లించు',
     'anta', 'dhara', 'kharchu', 'sari', 'chellinca',
+    // Tamil
+    'தொகை', 'விலை', 'செலவு', 'கட்டணம்', 'ரூபாய்',
+    'thogai', 'vilai', 'selavu', 'kattanam', 'roopaai',
+    // Kannada
+    'ಮೊತ್ತ', 'ಬೆಲೆ', 'ಖರ್ಚು', 'ಶುಲ್ಕ', 'ರೂಪಾಯಿ',
+    'motta', 'bele', 'kharchu', 'shulka', 'roopayi',
+    // Malayalam
+    'തുക', 'വില', 'ചെലവ്', 'ഫീസ്', 'രൂപ',
+    'thuka', 'vila', 'chelavu', 'fees', 'roopa',
+    // Bengali
+    'পরিমাণ', 'দাম', 'খরচ', 'ফি', 'টাকা',
+    'porimaaN', 'daam', 'khoroch', 'fee', 'taka',
   ],
   STOP: [
     // English
@@ -84,6 +168,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'ఆపు', 'నిలిపివేయు', 'సరిగా', 'సరి', 'ఆపేసేయు',
     'aapu', 'nilipuvu', 'sariga', 'aapeseyu',
+    // Tamil
+    'நிறுத்து', 'போதும்', 'நன்றி', 'சரி',
+    'niruthu', 'pothum', 'nandri', 'sari',
+    // Kannada
+    'ನಿಲ್ಲಿಸು', 'ಸಾಕು', 'ಧನ್ಯವಾದ', 'ಸರಿ',
+    'nillisu', 'saaku', 'dhanyavaada', 'sari',
+    // Malayalam
+    'നിർത്തുക', 'മതി', 'നന്ദി', 'ശരി',
+    'nirthuka', 'mathi', 'nandi', 'shari',
+    // Bengali
+    'থামো', 'যথেষ্ট', 'ধন্যবাদ', 'ঠিক আছে',
+    'thamo', 'jotheshto', 'dhonnobad', 'thik ache',
   ],
   HELP: [
     // English
@@ -91,6 +187,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'సహాయం', 'సహాయ', 'ఆదేశాలు', 'ఎలా', 'ఏమిటి', 'గురించి',
     'sahayam', 'ela', 'emiti', 'aadeshalu',
+    // Tamil
+    'உதவி', 'கட்டளைகள்', 'எப்படி', 'என்ன',
+    'udhavi', 'kattalaikal', 'eppadi', 'enna',
+    // Kannada
+    'ಸಹಾಯ', 'ಆದೇಶಗಳು', 'ಹೇಗೆ', 'ಏನು',
+    'sahaaya', 'aadeshagalu', 'hege', 'enu',
+    // Malayalam
+    'സഹായം', 'കമാൻഡുകൾ', 'എങ്ങനെ', 'എന്ത്',
+    'sahaayam', 'kammandukal', 'engane', 'enthu',
+    // Bengali
+    'সাহায্য', 'কমান্ড', 'কীভাবে', 'কী',
+    'sahajyo', 'command', 'kibhabe', 'ki',
   ],
   REPEAT: [
     // English
@@ -98,6 +206,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'నిరిక్షించు', 'మళ్లీ', 'మరోసారి', 'పునరావృత్తి', 'అది',
     'nirikshinchu', 'malli', 'marosari', 'punaraavritti',
+    // Tamil
+    'மீண்டும்', 'திரும்ப', 'மன்னிக்கவும்',
+    'meendum', 'thirumba', 'mannikkavum',
+    // Kannada
+    'ಮತ್ತೊಮ್ಮೆ', 'ಪುನರಾವರ್ತಿಸು', 'ಕ್ಷಮಿಸಿ',
+    'mattomme', 'punaraavardhisu', 'kshamisi',
+    // Malayalam
+    'ആവർത്തിക്കുക', 'വീണ്ടും', 'ക്ഷമിക്കണം',
+    'aavarththikkuka', 'veendum', 'kshamikkaNam',
+    // Bengali
+    'আবার', 'পুনরায়', 'মাফ করবেন',
+    'aabar', 'punoraye', 'maaf korben',
   ],
   DOWNLOAD: [
     // English
@@ -105,6 +225,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'డౌన్‌లోడ్', 'సేవ్', 'నిల్వ చేయు', 'వెలిపెట్టు', 'ఎక్స్‌పోర్ట్',
     'download', 'save', 'nilva', 'velipedu', 'export',
+    // Tamil
+    'பதிவிறக்கம்', 'சேமி', 'ஏற்றுமதி',
+    'pathivirakkam', 'saemi', 'erumathi',
+    // Kannada
+    'ಡೌನ್‌ಲೋಡ್', 'ಉಳಿಸು', 'ರಫ್ತು',
+    'download', 'ulisu', 'raphtu',
+    // Malayalam
+    'ഡൗൺലോഡ്', 'സേവ്', 'എക്സ്പോർട്ട്',
+    'download', 'save', 'export',
+    // Bengali
+    'ডাউনলোড', 'সংরক্ষণ', 'এক্সপোর্ট',
+    'download', 'shongrokkhon', 'export',
   ],
   SHARE: [
     // English
@@ -112,6 +244,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'పంచుకో', 'పంపించు', 'లింక్', 'పంచు', 'పంపుతూ',
     'panchuko', 'pampinchu', 'panchu', 'link',
+    // Tamil
+    'பகிர்', 'அனுப்பு', 'இணைப்பு',
+    'pagir', 'anuppu', 'inaippu',
+    // Kannada
+    'ಹಂಚು', 'ಕಳುಹಿಸು', 'ಲಿಂಕ್',
+    'hanchu', 'kaluhisu', 'link',
+    // Malayalam
+    'പങ്കിടുക', 'അയയ്ക്കുക', 'ലിങ്ക്',
+    'pangiduka', 'ayaykkuka', 'link',
+    // Bengali
+    'শেয়ার', 'পাঠাও', 'লিংক',
+    'share', 'pathao', 'link',
   ],
   READ_FULL: [
     // English
@@ -119,6 +263,18 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'పూర్తిగా', 'అందరికి', 'సంపూర్ణ', 'మొత్తం', 'సమ్మతుకు',
     'purtiga', 'sampurna', 'mottam', 'andariki',
+    // Tamil
+    'முழு', 'எல்லாம்', 'முழுமையான', 'மொத்த',
+    'muzhu', 'ellaam', 'mulumaiyaana', 'motha',
+    // Kannada
+    'ಪೂರ್ಣ', 'ಎಲ್ಲ', 'ಸಂಪೂರ್ಣ', 'ಮೊತ್ತ',
+    'poorna', 'ella', 'sampoorna', 'motta',
+    // Malayalam
+    'മുഴുവൻ', 'എല്ലാം', 'സമ്പൂർണ്ണം',
+    'muzhuvan', 'ellaam', 'sampoorNNam',
+    // Bengali
+    'পুরো', 'সব', 'সম্পূর্ণ', 'মোট',
+    'puro', 'sob', 'shompurno', 'mot',
   ],
   TRANSLATE: [
     // English
@@ -126,11 +282,23 @@ const INTENT_PATTERNS: Record<string, string[]> = {
     // Telugu
     'అనువాదం', 'భాష', 'మార్పు చేయు', 'ఆంధ్ర', 'హిందీ', 'తమిళ్',
     'anuvvadham', 'bhasha', 'maarpu', 'andhra', 'hindi', 'tamil',
+    // Tamil
+    'மொழிபெயர்', 'மொழி', 'தெலுங்கு', 'இந்தி', 'கன்னடம்', 'மலையாளம்',
+    'mozhipeyar', 'mozhi', 'telungu', 'inthi', 'kannadam', 'malaiyaalam',
+    // Kannada
+    'ಭಾಷಾಂತರ', 'ಭಾಷೆ', 'ತೆಲುಗು', 'ಹಿಂದಿ', 'ತಮಿಳು', 'ಮಲಯಾಳಂ',
+    'bhaashaantara', 'bhaashe', 'telugu', 'hindi', 'tamilu', 'malayaalam',
+    // Malayalam
+    'വിവർത്തനം', 'ഭാഷ', 'തെലുങ്ക്', 'ഹിന്ദി', 'തമിഴ്', 'കന്നഡ',
+    'vivartthanam', 'bhaasha', 'telungu', 'hindi', 'tamizh', 'kannada',
+    // Bengali
+    'অনুবাদ', 'ভাষা', 'তেলুগু', 'হিন্দি', 'তামিল', 'কন্নড়', 'মালায়ালাম',
+    'onubad', 'bhasha', 'telugu', 'hindi', 'tamil', 'kannada', 'malayalam',
   ],
 };
 
 // Common speech recognition mistakes and their corrections
-// Includes English and Telugu variants
+// Includes English, Telugu, Tamil, Kannada, Malayalam, and Bengali variants
 const SPEECH_CORRECTIONS: Record<string, string> = {
   // English corrections
   'some marie': 'summary',
@@ -157,6 +325,7 @@ const SPEECH_CORRECTIONS: Record<string, string> = {
   'stap': 'stop',
   'halp': 'help',
   'held': 'help',
+  
   // Telugu corrections - phonetic variations
   'sarama': 'saaramsam',
   'saraam': 'saaramsam',
@@ -180,7 +349,6 @@ const SPEECH_CORRECTIONS: Record<string, string> = {
   'marosa': 'marosari',
   'anuvvad': 'anuvvadham',
   'bhasha': 'bhasha',
-  // More phonetic variants for Telugu recognition
   'saramsam': 'saaramsam',
   'saramsha': 'saaramsam',
   'saransh': 'saaramsam',
@@ -191,6 +359,248 @@ const SPEECH_CORRECTIONS: Record<string, string> = {
   'thedhi': 'teedi',
   'aapuu': 'aapu',
   'appu': 'aapu',
+  
+  // Tamil corrections - phonetic variations
+  'surukam': 'surukkam',
+  'surukham': 'surukkam',
+  'churukkam': 'surukkam',
+  'saraam': 'saaram',
+  'kaalaketu': 'kaalakkedu',
+  'kalakkedu': 'kaalakkedu',
+  'thedi': 'thethi',
+  'thethi': 'thethi',
+  'mukhiyam': 'mukkiyam',
+  'mukiyam': 'mukkiyam',
+  'echarikai': 'echarikkai',
+  'echarikei': 'echarikkai',
+  'piratchinai': 'pirachchinai',
+  'piracchinai': 'pirachchinai',
+  'nirutu': 'niruthu',
+  'niruttu': 'niruthu',
+  'podhum': 'pothum',
+  'podhu': 'pothum',
+  'udhavi': 'udhavi',
+  'udavi': 'udhavi',
+  'meedum': 'meendum',
+  'meendu': 'meendum',
+  'thirumpa': 'thirumba',
+  'pathivirakkam': 'pathivirakkam',
+  'pathiviraku': 'pathivirakkam',
+  'pagiru': 'pagir',
+  'anuppu': 'anuppu',
+  'anupu': 'anuppu',
+  'mulu': 'muzhu',
+  'mullu': 'muzhu',
+  'ellam': 'ellaam',
+  'mozhi peyar': 'mozhipeyar',
+  'mozhipeyaru': 'mozhipeyar',
+  'thoghai': 'thogai',
+  'thokai': 'thogai',
+  'vilai': 'vilai',
+  'seyyal': 'seyal',
+  'seyal': 'seyal',
+  'vagai': 'vagai',
+  'vaghai': 'vagai',
+  
+  // Kannada corrections - phonetic variations
+  'saramsha': 'saaramsha',
+  'saramsh': 'saaramsha',
+  'odhu': 'odu',
+  'helu': 'helu',
+  'gaduv': 'gaduvu',
+  'gadhuvu': 'gaduvu',
+  'dinanka': 'dinaanka',
+  'dinaamka': 'dinaanka',
+  'mukhya': 'mukhya',
+  'mukya': 'mukhya',
+  'mahiti': 'maahiti',
+  'mahithi': 'maahiti',
+  'echarike': 'echcharike',
+  'echarikhe': 'echcharike',
+  'samasyae': 'samasye',
+  'samasya': 'samasye',
+  'nilisu': 'nillisu',
+  'nillsu': 'nillisu',
+  'saku': 'saaku',
+  'sakhu': 'saaku',
+  'sahaya': 'sahaaya',
+  'sahaaye': 'sahaaya',
+  'adeshagalu': 'aadeshagalu',
+  'heghe': 'hege',
+  'hege': 'hege',
+  'mattome': 'mattomme',
+  'matome': 'mattomme',
+  'downlod': 'download',
+  'ulisu': 'ulisu',
+  'ulishu': 'ulisu',
+  'hancu': 'hanchu',
+  'hanccu': 'hanchu',
+  'kaluhisu': 'kaluhisu',
+  'kaluhishu': 'kaluhisu',
+  'poorna': 'poorna',
+  'purna': 'poorna',
+  'sampoorna': 'sampoorna',
+  'sampurna': 'sampoorna',
+  'bhashantar': 'bhaashaantara',
+  'bhashantara': 'bhaashaantara',
+  'bhashe': 'bhaashe',
+  'bhashae': 'bhaashe',
+  'motta': 'motta',
+  'moth': 'motta',
+  'bele': 'bele',
+  'belae': 'bele',
+  'kriye': 'kriye',
+  'kriya': 'kriye',
+  'vidha': 'vidha',
+  'vidh': 'vidha',
+  
+  // Malayalam corrections - phonetic variations
+  'samgraham': 'samgraham',
+  'sangraham': 'samgraham',
+  'samgrahm': 'samgraham',
+  'vaayikuka': 'vaayikkuka',
+  'vayikkuka': 'vaayikkuka',
+  'parayuka': 'parayuka',
+  'parayuuka': 'parayuka',
+  'avasana theeyathi': 'avasaana theeyathi',
+  'avasana tiyathi': 'avasaana theeyathi',
+  'tiyathi': 'theeyathi',
+  'theeyati': 'theeyathi',
+  'epol': 'eppol',
+  'eppolu': 'eppol',
+  'pradhanam': 'pradhaanam',
+  'pradanam': 'pradhaanam',
+  'vivarangal': 'vivarangal',
+  'vivaramgal': 'vivarangal',
+  'munnariyipu': 'munnariyippu',
+  'munnariyip': 'munnariyippu',
+  'prashnam': 'prashnam',
+  'prasnam': 'prashnam',
+  'nirthuka': 'nirthuka',
+  'nirtuka': 'nirthuka',
+  'mathi': 'mathi',
+  'mati': 'mathi',
+  'sahayam': 'sahaayam',
+  'sahayum': 'sahaayam',
+  'kammandukal': 'kammandukal',
+  'kamandukal': 'kammandukal',
+  'engane': 'engane',
+  'engana': 'engane',
+  'aavarthikkuka': 'aavarththikkuka',
+  'avarthikkuka': 'aavarththikkuka',
+  'veendum': 'veendum',
+  'vendu': 'veendum',
+  'download': 'download',
+  'downlod': 'download',
+  'pangiduka': 'pangiduka',
+  'pangituka': 'pangiduka',
+  'ayaykuka': 'ayaykkuka',
+  'ayaykkuuka': 'ayaykkuka',
+  'muzhuvan': 'muzhuvan',
+  'muluvan': 'muzhuvan',
+  'ellam': 'ellaam',
+  'elam': 'ellaam',
+  'sampoornam': 'sampoorNNam',
+  'sampurnam': 'sampoorNNam',
+  'vivarthanam': 'vivartthanam',
+  'vivarttanam': 'vivartthanam',
+  'bhasha': 'bhaasha',
+  'basha': 'bhaasha',
+  'thuka': 'thuka',
+  'tuka': 'thuka',
+  'vila': 'vila',
+  'vilaa': 'vila',
+  'nadapadi': 'nadapadi',
+  'nadapati': 'nadapadi',
+  'tharam': 'tharam',
+  'taram': 'tharam',
+  
+  // Bengali corrections - phonetic variations
+  'sarsankhep': 'sarsankhep',
+  'sarasankhep': 'sarsankhep',
+  'sarsongkhep': 'sarsankhep',
+  'saransh': 'saransh',
+  'saramsh': 'saransh',
+  'poro': 'poro',
+  'paro': 'poro',
+  'bolo': 'bolo',
+  'bol': 'bolo',
+  'byakhya': 'byakhya',
+  'bekkhya': 'byakhya',
+  'somoyseema': 'somoyseema',
+  'somoyshima': 'somoyseema',
+  'tarikh': 'tarikh',
+  'tarik': 'tarikh',
+  'kokhon': 'kokhon',
+  'kokon': 'kokhon',
+  'gurutwopurno': 'gurutwopurno',
+  'gurutopurno': 'gurutwopurno',
+  'tothyo': 'tothyo',
+  'totho': 'tothyo',
+  'bibaron': 'bibaron',
+  'bibaran': 'bibaron',
+  'sotorkota': 'sotorkota',
+  'sotorkota': 'sotorkota',
+  'somosya': 'somosya',
+  'somossa': 'somosya',
+  'jhunki': 'jhunki',
+  'junki': 'jhunki',
+  'bipod': 'bipod',
+  'bipod': 'bipod',
+  'thamo': 'thamo',
+  'tamo': 'thamo',
+  'jotheshto': 'jotheshto',
+  'joteshto': 'jotheshto',
+  'dhonnobad': 'dhonnobad',
+  'dhonobad': 'dhonnobad',
+  'thik ache': 'thik ache',
+  'thik ase': 'thik ache',
+  'sahajyo': 'sahajyo',
+  'sahajo': 'sahajyo',
+  'kibhabe': 'kibhabe',
+  'kibabe': 'kibhabe',
+  'aabar': 'aabar',
+  'abar': 'aabar',
+  'punoraye': 'punoraye',
+  'punoraya': 'punoraye',
+  'maaf korben': 'maaf korben',
+  'maph korben': 'maaf korben',
+  'shongrokkhon': 'shongrokkhon',
+  'songrokkhon': 'shongrokkhon',
+  'pathao': 'pathao',
+  'patao': 'pathao',
+  'puro': 'puro',
+  'puru': 'puro',
+  'sob': 'sob',
+  'sab': 'sob',
+  'shompurno': 'shompurno',
+  'sompurno': 'shompurno',
+  'mot': 'mot',
+  'moth': 'mot',
+  'onubad': 'onubad',
+  'onubod': 'onubad',
+  'bhasha': 'bhasha',
+  'basha': 'bhasha',
+  'porimaan': 'porimaaN',
+  'poriman': 'porimaaN',
+  'daam': 'daam',
+  'dam': 'daam',
+  'khoroch': 'khoroch',
+  'koroch': 'khoroch',
+  'taka': 'taka',
+  'tako': 'taka',
+  'kaaj': 'kaaj',
+  'kaj': 'kaaj',
+  'podokkhep': 'podokkhep',
+  'podokhep': 'podokkhep',
+  'ki korte hobe': 'ki korte hobe',
+  'ki korte hbe': 'ki korte hobe',
+  'dhoron': 'dhoron',
+  'doron': 'dhoron',
+  'prokar': 'prokar',
+  'prakar': 'prokar',
+  'shreni': 'shreni',
+  'sreni': 'shreni',
 };
 
 // Telugu response templates - 100% token-free, pre-written responses
@@ -324,6 +734,274 @@ const HINDI_RESPONSES: Record<string, {
   UNKNOWN: {
     withData: () => 'क्षमा करें, मुझे समझ नहीं आया। उपलब्ध आदेशों को सुनने के लिए मदद कहें।',
     noData: 'क्षमा करें, मुझे समझ नहीं आया। उपलब्ध आदेशों को सुनने के लिए मदद कहें।',
+  },
+};
+
+// Tamil response templates - 100% token-free, pre-written responses
+const TAMIL_RESPONSES: Record<string, {
+  withData: (data: string) => string;
+  noData: string;
+}> = {
+  READ_SUMMARY: {
+    withData: (summary) => `இதோ சுருக்கம்: ${summary}`,
+    noData: 'இந்த ஆவணத்திற்கு சுருக்கம் கிடைக்கவில்லை. பகுப்பாய்வு முடியும் வரை காத்திருக்கவும்.',
+  },
+  GET_DEADLINES: {
+    withData: (deadlines) => `இந்த ஆவணத்தில் காலக்கெடுக்கள் கண்டறியப்பட்டன. ${deadlines}`,
+    noData: 'இந்த ஆவணத்தில் காலக்கெடுக்கள் இல்லை.',
+  },
+  GET_KEY_INFO: {
+    withData: (info) => `முக்கியமான தகவல் இங்கே: ${info}`,
+    noData: 'இந்த ஆவணத்திலிருந்து முக்கிய தகவல் இன்னும் எடுக்கப்படவில்லை.',
+  },
+  GET_TYPE: {
+    withData: (type) => `இது ஒரு ${type} ஆவணம்.`,
+    noData: 'ஆவண வகையை தீர்மானிக்க முடியவில்லை.',
+  },
+  GET_ACTIONS: {
+    withData: (actions) => `பரிந்துரைக்கப்பட்ட நடவடிக்கைகள்: ${actions}`,
+    noData: 'இந்த ஆவணத்திற்கு குறிப்பிட்ட நடவடிக்கைகள் தேவையில்லை.',
+  },
+  GET_AMOUNT: {
+    withData: (amount) => `இந்த தொகை தகவல் கண்டறியப்பட்டது: ${amount}`,
+    noData: 'இந்த ஆவணத்தில் பணத் தொகைகள் இல்லை.',
+  },
+  WARNINGS: {
+    withData: (warnings) => `எச்சரிக்கை! ${warnings}`,
+    noData: 'இந்த ஆவணத்தில் எச்சரிக்கைகள் அல்லது கவலைகள் இல்லை.',
+  },
+  STOP: {
+    withData: () => 'சரி, நிறுத்துகிறேன்.',
+    noData: 'சரி, நிறுத்துகிறேன்.',
+  },
+  HELP: {
+    withData: () => 'நீங்கள் தமிழில் பேசலாம்! இந்த கட்டளைகளை முயற்சிக்கவும்: சுருக்கம் படிக்க, காலக்கெடு என்ன, முக்கிய தகவல், எச்சரிக்கைகள், பதிவிறக்கம், பகிர், அல்லது நிறுத்து.',
+    noData: 'நீங்கள் தமிழில் பேசலாம்! இந்த கட்டளைகளை முயற்சிக்கவும்: சுருக்கம், காலக்கெடு, முக்கியம், எச்சரிக்கை, நிறுத்து.',
+  },
+  REPEAT: {
+    withData: (last) => last,
+    noData: 'இன்னும் திரும்ப சொல்ல எதுவும் இல்லை. முதலில் என்னிடம் ஏதாவது கேளுங்கள்.',
+  },
+  DOWNLOAD: {
+    withData: () => 'பதிவிறக்க விருப்பத்தை திறக்கிறேன். ஆவணத்தை சேமிக்க PDF பதிவிறக்க பொத்தானை கிளிக் செய்யவும்.',
+    noData: 'பதிவிறக்க விருப்பத்தை திறக்கிறேன். ஆவணத்தை சேமிக்க PDF பதிவிறக்க பொத்தானை கிளிக் செய்யவும்.',
+  },
+  SHARE: {
+    withData: () => 'பகிர் விருப்பத்தை திறக்கிறேன். இந்த ஆவணத்தை பகிர பகிர் பொத்தானை கிளிக் செய்யவும்.',
+    noData: 'பகிர் விருப்பத்தை திறக்கிறேன். இந்த ஆவணத்தை பகிர பகிர் பொத்தானை கிளிக் செய்யவும்.',
+  },
+  READ_FULL: {
+    withData: (text) => `ஆவண உரை இங்கே: ${text}`,
+    noData: 'இந்த ஆவணத்திலிருந்து உரை இன்னும் எடுக்கப்படவில்லை.',
+  },
+  TRANSLATE: {
+    withData: (lang) => `சரி, ${lang} மொழியில் மொழிபெயர்க்கிறேன். முழு மொழிபெயர்ப்பை கேட்க ஆப்பில் மொழிபெயர்ப்பு பொத்தானை பயன்படுத்தவும்.`,
+    noData: 'மொழிபெயர்ப்புக்கு மொழியை தேர்ந்தெடுக்கவும்.',
+  },
+  UNKNOWN: {
+    withData: () => 'மன்னிக்கவும், புரியவில்லை. கிடைக்கும் கட்டளைகளை கேட்க உதவி என்று சொல்லுங்கள்.',
+    noData: 'மன்னிக்கவும், புரியவில்லை. கிடைக்கும் கட்டளைகளை கேட்க உதவி என்று சொல்லுங்கள்.',
+  },
+};
+
+// Kannada response templates - 100% token-free, pre-written responses
+const KANNADA_RESPONSES: Record<string, {
+  withData: (data: string) => string;
+  noData: string;
+}> = {
+  READ_SUMMARY: {
+    withData: (summary) => `ಇಲ್ಲಿ ಸಾರಾಂಶವಿದೆ: ${summary}`,
+    noData: 'ಈ ಡಾಕ್ಯುಮೆಂಟ್‌ಗೆ ಸಾರಾಂಶ ಲಭ್ಯವಿಲ್ಲ. ವಿಶ್ಲೇಷಣೆ ಮುಗಿಯುವವರೆಗೆ ಕಾಯಿರಿ.',
+  },
+  GET_DEADLINES: {
+    withData: (deadlines) => `ಈ ಡಾಕ್ಯುಮೆಂಟ್‌ನಲ್ಲಿ ಗಡುವುಗಳು ಕಂಡುಬಂದಿವೆ. ${deadlines}`,
+    noData: 'ಈ ಡಾಕ್ಯುಮೆಂಟ್‌ನಲ್ಲಿ ಗಡುವುಗಳು ಕಂಡುಬಂದಿಲ್ಲ.',
+  },
+  GET_KEY_INFO: {
+    withData: (info) => `ಮುಖ್ಯ ಮಾಹಿತಿ ಇಲ್ಲಿದೆ: ${info}`,
+    noData: 'ಈ ಡಾಕ್ಯುಮೆಂಟ್‌ನಿಂದ ಮುಖ್ಯ ಮಾಹಿತಿ ಇನ್ನೂ ಹೊರತೆಗೆದಿಲ್ಲ.',
+  },
+  GET_TYPE: {
+    withData: (type) => `ಇದು ${type} ಡಾಕ್ಯುಮೆಂಟ್.`,
+    noData: 'ಡಾಕ್ಯುಮೆಂಟ್ ಪ್ರಕಾರವನ್ನು ನಿರ್ಧರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.',
+  },
+  GET_ACTIONS: {
+    withData: (actions) => `ಸೂಚಿಸಿದ ಕ್ರಿಯೆಗಳು: ${actions}`,
+    noData: 'ಈ ಡಾಕ್ಯುಮೆಂಟ್‌ಗೆ ನಿರ್ದಿಷ್ಟ ಕ್ರಿಯೆಗಳು ಅಗತ್ಯವಿಲ್ಲ.',
+  },
+  GET_AMOUNT: {
+    withData: (amount) => `ಈ ಮೊತ್ತದ ಮಾಹಿತಿ ಕಂಡುಬಂದಿದೆ: ${amount}`,
+    noData: 'ಈ ಡಾಕ್ಯುಮೆಂಟ್‌ನಲ್ಲಿ ಹಣದ ಮೊತ್ತಗಳು ಕಂಡುಬಂದಿಲ್ಲ.',
+  },
+  WARNINGS: {
+    withData: (warnings) => `ಎಚ್ಚರಿಕೆ! ${warnings}`,
+    noData: 'ಈ ಡಾಕ್ಯುಮೆಂಟ್‌ನಲ್ಲಿ ಎಚ್ಚರಿಕೆಗಳು ಅಥವಾ ಕಾಳಜಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ.',
+  },
+  STOP: {
+    withData: () => 'ಸರಿ, ನಿಲ್ಲಿಸುತ್ತಿದ್ದೇನೆ.',
+    noData: 'ಸರಿ, ನಿಲ್ಲಿಸುತ್ತಿದ್ದೇನೆ.',
+  },
+  HELP: {
+    withData: () => 'ನೀವು ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಬಹುದು! ಈ ಆದೇಶಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ: ಸಾರಾಂಶ ಓದು, ಗಡುವು ಏನು, ಮುಖ್ಯ ಮಾಹಿತಿ, ಎಚ್ಚರಿಕೆಗಳು, ಡೌನ್‌ಲೋಡ್, ಹಂಚು, ಅಥವಾ ನಿಲ್ಲಿಸು.',
+    noData: 'ನೀವು ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಬಹುದು! ಈ ಆದೇಶಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ: ಸಾರಾಂಶ, ಗಡುವು, ಮುಖ್ಯ, ಎಚ್ಚರಿಕೆ, ನಿಲ್ಲಿಸು.',
+  },
+  REPEAT: {
+    withData: (last) => last,
+    noData: 'ಇನ್ನೂ ಪುನರಾವರ್ತಿಸಲು ಏನೂ ಇಲ್ಲ. ಮೊದಲು ನನ್ನನ್ನು ಏನಾದರೂ ಕೇಳಿ.',
+  },
+  DOWNLOAD: {
+    withData: () => 'ಡೌನ್‌ಲೋಡ್ ಆಯ್ಕೆಯನ್ನು ತೆರೆಯುತ್ತಿದ್ದೇನೆ. ಡಾಕ್ಯುಮೆಂಟ್ ಉಳಿಸಲು PDF ಡೌನ್‌ಲೋಡ್ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ.',
+    noData: 'ಡೌನ್‌ಲೋಡ್ ಆಯ್ಕೆಯನ್ನು ತೆರೆಯುತ್ತಿದ್ದೇನೆ. ಡಾಕ್ಯುಮೆಂಟ್ ಉಳಿಸಲು PDF ಡೌನ್‌ಲೋಡ್ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ.',
+  },
+  SHARE: {
+    withData: () => 'ಹಂಚು ಆಯ್ಕೆಯನ್ನು ತೆರೆಯುತ್ತಿದ್ದೇನೆ. ಈ ಡಾಕ್ಯುಮೆಂಟ್ ಹಂಚಲು ಹಂಚು ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ.',
+    noData: 'ಹಂಚು ಆಯ್ಕೆಯನ್ನು ತೆರೆಯುತ್ತಿದ್ದೇನೆ. ಈ ಡಾಕ್ಯುಮೆಂಟ್ ಹಂಚಲು ಹಂಚು ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ.',
+  },
+  READ_FULL: {
+    withData: (text) => `ಡಾಕ್ಯುಮೆಂಟ್ ಪಠ್ಯ ಇಲ್ಲಿದೆ: ${text}`,
+    noData: 'ಈ ಡಾಕ್ಯುಮೆಂಟ್‌ನಿಂದ ಪಠ್ಯ ಇನ್ನೂ ಹೊರತೆಗೆದಿಲ್ಲ.',
+  },
+  TRANSLATE: {
+    withData: (lang) => `ಸರಿ, ${lang} ಭಾಷೆಗೆ ಅನುವಾದಿಸುತ್ತೇನೆ. ಪೂರ್ಣ ಅನುವಾದ ಕೇಳಲು ಆ್ಯಪ್‌ನಲ್ಲಿ ಅನುವಾದ ಬಟನ್ ಬಳಸಿ.`,
+    noData: 'ಅನುವಾದಕ್ಕಾಗಿ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.',
+  },
+  UNKNOWN: {
+    withData: () => 'ಕ್ಷಮಿಸಿ, ನನಗೆ ಅರ್ಥವಾಗಲಿಲ್ಲ. ಲಭ್ಯವಿರುವ ಆದೇಶಗಳನ್ನು ಕೇಳಲು ಸಹಾಯ ಎಂದು ಹೇಳಿ.',
+    noData: 'ಕ್ಷಮಿಸಿ, ನನಗೆ ಅರ್ಥವಾಗಲಿಲ್ಲ. ಲಭ್ಯವಿರುವ ಆದೇಶಗಳನ್ನು ಕೇಳಲು ಸಹಾಯ ಎಂದು ಹೇಳಿ.',
+  },
+};
+
+// Malayalam response templates - 100% token-free, pre-written responses
+const MALAYALAM_RESPONSES: Record<string, {
+  withData: (data: string) => string;
+  noData: string;
+}> = {
+  READ_SUMMARY: {
+    withData: (summary) => `ഇതാ സംഗ്രഹം: ${summary}`,
+    noData: 'ഈ ഡോക്യുമെന്റിന് സംഗ്രഹം ലഭ്യമല്ല. വിശകലനം പൂർത്തിയാകുന്നതുവരെ കാത്തിരിക്കുക.',
+  },
+  GET_DEADLINES: {
+    withData: (deadlines) => `ഈ ഡോക്യുമെന്റിൽ അവസാന തീയതികൾ കണ്ടെത്തി. ${deadlines}`,
+    noData: 'ഈ ഡോക്യുമെന്റിൽ അവസാന തീയതികൾ കണ്ടെത്തിയില്ല.',
+  },
+  GET_KEY_INFO: {
+    withData: (info) => `പ്രധാന വിവരങ്ങൾ ഇവിടെ: ${info}`,
+    noData: 'ഈ ഡോക്യുമെന്റിൽ നിന്ന് പ്രധാന വിവരങ്ങൾ ഇതുവരെ എടുത്തിട്ടില്ല.',
+  },
+  GET_TYPE: {
+    withData: (type) => `ഇത് ഒരു ${type} ഡോക്യുമെന്റ് ആണ്.`,
+    noData: 'ഡോക്യുമെന്റ് തരം നിർണ്ണയിക്കാൻ കഴിഞ്ഞില്ല.',
+  },
+  GET_ACTIONS: {
+    withData: (actions) => `നിർദ്ദേശിച്ച നടപടികൾ: ${actions}`,
+    noData: 'ഈ ഡോക്യുമെന്റിന് പ്രത്യേക നടപടികൾ ആവശ്യമില്ല.',
+  },
+  GET_AMOUNT: {
+    withData: (amount) => `ഈ തുക വിവരം കണ്ടെത്തി: ${amount}`,
+    noData: 'ഈ ഡോക്യുമെന്റിൽ പണത്തുക കണ്ടെത്തിയില്ല.',
+  },
+  WARNINGS: {
+    withData: (warnings) => `മുന്നറിയിപ്പ്! ${warnings}`,
+    noData: 'ഈ ഡോക്യുമെന്റിൽ മുന്നറിയിപ്പുകളോ ആശങ്കകളോ കണ്ടെത്തിയില്ല.',
+  },
+  STOP: {
+    withData: () => 'ശരി, നിർത്തുന്നു.',
+    noData: 'ശരി, നിർത്തുന്നു.',
+  },
+  HELP: {
+    withData: () => 'നിങ്ങൾക്ക് മലയാളത്തിൽ സംസാരിക്കാം! ഈ കമാൻഡുകൾ പരീക്ഷിക്കുക: സംഗ്രഹം വായിക്കുക, അവസാന തീയതി എന്താണ്, പ്രധാന വിവരങ്ങൾ, മുന്നറിയിപ്പുകൾ, ഡൗൺലോഡ്, പങ്കിടുക, അല്ലെങ്കിൽ നിർത്തുക.',
+    noData: 'നിങ്ങൾക്ക് മലയാളത്തിൽ സംസാരിക്കാം! ഈ കമാൻഡുകൾ പരീക്ഷിക്കുക: സംഗ്രഹം, തീയതി, പ്രധാനം, മുന്നറിയിപ്പ്, നിർത്തുക.',
+  },
+  REPEAT: {
+    withData: (last) => last,
+    noData: 'ആവർത്തിക്കാൻ ഇതുവരെ ഒന്നുമില്ല. ആദ്യം എന്നോട് എന്തെങ്കിലും ചോദിക്കൂ.',
+  },
+  DOWNLOAD: {
+    withData: () => 'ഡൗൺലോഡ് ഓപ്ഷൻ തുറക്കുന്നു. ഡോക്യുമെന്റ് സേവ് ചെയ്യാൻ PDF ഡൗൺലോഡ് ബട്ടൺ ക്ലിക്ക് ചെയ്യുക.',
+    noData: 'ഡൗൺലോഡ് ഓപ്ഷൻ തുറക്കുന്നു. ഡോക്യുമെന്റ് സേവ് ചെയ്യാൻ PDF ഡൗൺലോഡ് ബട്ടൺ ക്ലിക്ക് ചെയ്യുക.',
+  },
+  SHARE: {
+    withData: () => 'ഷെയർ ഓപ്ഷൻ തുറക്കുന്നു. ഈ ഡോക്യുമെന്റ് പങ്കിടാൻ ഷെയർ ബട്ടൺ ക്ലിക്ക് ചെയ്യുക.',
+    noData: 'ഷെയർ ഓപ്ഷൻ തുറക്കുന്നു. ഈ ഡോക്യുമെന്റ് പങ്കിടാൻ ഷെയർ ബട്ടൺ ക്ലിക്ക് ചെയ്യുക.',
+  },
+  READ_FULL: {
+    withData: (text) => `ഡോക്യുമെന്റ് ടെക്സ്റ്റ് ഇവിടെ: ${text}`,
+    noData: 'ഈ ഡോക്യുമെന്റിൽ നിന്ന് ടെക്സ്റ്റ് ഇതുവരെ എടുത്തിട്ടില്ല.',
+  },
+  TRANSLATE: {
+    withData: (lang) => `ശരി, ${lang} ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യുന്നു. പൂർണ്ണ വിവർത്തനം കേൾക്കാൻ ആപ്പിൽ വിവർത്തന ബട്ടൺ ഉപയോഗിക്കുക.`,
+    noData: 'വിവർത്തനത്തിന് ഭാഷ തിരഞ്ഞെടുക്കുക.',
+  },
+  UNKNOWN: {
+    withData: () => 'ക്ഷമിക്കണം, എനിക്ക് മനസ്സിലായില്ല. ലഭ്യമായ കമാൻഡുകൾ കേൾക്കാൻ സഹായം എന്ന് പറയുക.',
+    noData: 'ക്ഷമിക്കണം, എനിക്ക് മനസ്സിലായില്ല. ലഭ്യമായ കമാൻഡുകൾ കേൾക്കാൻ സഹായം എന്ന് പറയുക.',
+  },
+};
+
+// Bengali response templates - 100% token-free, pre-written responses
+const BENGALI_RESPONSES: Record<string, {
+  withData: (data: string) => string;
+  noData: string;
+}> = {
+  READ_SUMMARY: {
+    withData: (summary) => `এখানে সারসংক্ষেপ: ${summary}`,
+    noData: 'এই নথির জন্য সারসংক্ষেপ উপলব্ধ নেই। বিশ্লেষণ সম্পূর্ণ হওয়া পর্যন্ত অপেক্ষা করুন।',
+  },
+  GET_DEADLINES: {
+    withData: (deadlines) => `এই নথিতে সময়সীমা পাওয়া গেছে। ${deadlines}`,
+    noData: 'এই নথিতে কোনো সময়সীমা পাওয়া যায়নি।',
+  },
+  GET_KEY_INFO: {
+    withData: (info) => `গুরুত্বপূর্ণ তথ্য এখানে: ${info}`,
+    noData: 'এই নথি থেকে এখনও গুরুত্বপূর্ণ তথ্য বের করা হয়নি।',
+  },
+  GET_TYPE: {
+    withData: (type) => `এটি একটি ${type} নথি।`,
+    noData: 'নথির ধরণ নির্ধারণ করা যায়নি।',
+  },
+  GET_ACTIONS: {
+    withData: (actions) => `প্রস্তাবিত পদক্ষেপ: ${actions}`,
+    noData: 'এই নথির জন্য কোনো নির্দিষ্ট পদক্ষেপের প্রয়োজন নেই।',
+  },
+  GET_AMOUNT: {
+    withData: (amount) => `এই পরিমাণের তথ্য পাওয়া গেছে: ${amount}`,
+    noData: 'এই নথিতে কোনো অর্থের পরিমাণ পাওয়া যায়নি।',
+  },
+  WARNINGS: {
+    withData: (warnings) => `সতর্কতা! ${warnings}`,
+    noData: 'এই নথিতে কোনো সতর্কতা বা উদ্বেগ পাওয়া যায়নি।',
+  },
+  STOP: {
+    withData: () => 'ঠিক আছে, থামছি।',
+    noData: 'ঠিক আছে, থামছি।',
+  },
+  HELP: {
+    withData: () => 'আপনি বাংলায় বলতে পারেন! এই কমান্ডগুলো চেষ্টা করুন: সারসংক্ষেপ পড়ো, সময়সীমা কী, গুরুত্বপূর্ণ তথ্য, সতর্কতা, ডাউনলোড, শেয়ার, অথবা থামো।',
+    noData: 'আপনি বাংলায় বলতে পারেন! এই কমান্ডগুলো চেষ্টা করুন: সারসংক্ষেপ, সময়সীমা, গুরুত্বপূর্ণ, সতর্কতা, থামো।',
+  },
+  REPEAT: {
+    withData: (last) => last,
+    noData: 'এখনও পুনরাবৃত্তি করার কিছু নেই। প্রথমে আমাকে কিছু জিজ্ঞাসা করুন।',
+  },
+  DOWNLOAD: {
+    withData: () => 'ডাউনলোড অপশন খুলছি। নথি সংরক্ষণ করতে PDF ডাউনলোড বোতামে ক্লিক করুন।',
+    noData: 'ডাউনলোড অপশন খুলছি। নথি সংরক্ষণ করতে PDF ডাউনলোড বোতামে ক্লিক করুন।',
+  },
+  SHARE: {
+    withData: () => 'শেয়ার অপশন খুলছি। এই নথি শেয়ার করতে শেয়ার বোতামে ক্লিক করুন।',
+    noData: 'শেয়ার অপশন খুলছি। এই নথি শেয়ার করতে শেয়ার বোতামে ক্লিক করুন।',
+  },
+  READ_FULL: {
+    withData: (text) => `নথির টেক্সট এখানে: ${text}`,
+    noData: 'এই নথি থেকে এখনও টেক্সট বের করা হয়নি।',
+  },
+  TRANSLATE: {
+    withData: (lang) => `ঠিক আছে, ${lang} ভাষায় অনুবাদ করছি। সম্পূর্ণ অনুবাদ শুনতে অ্যাপে অনুবাদ বোতাম ব্যবহার করুন।`,
+    noData: 'অনুবাদের জন্য ভাষা নির্বাচন করুন।',
+  },
+  UNKNOWN: {
+    withData: () => 'দুঃখিত, বুঝতে পারিনি। উপলব্ধ কমান্ড শুনতে সাহায্য বলুন।',
+    noData: 'দুঃখিত, বুঝতে পারিনি। উপলব্ধ কমান্ড শুনতে সাহায্য বলুন।',
   },
 };
 
@@ -504,16 +1182,26 @@ export const useVoiceCommands = ({
   }, [correctSpeech, wordSimilarity]);
 
   // Generate response based on intent - uses CACHED data only, NO API calls
-  // Language-aware: Returns Telugu/Hindi responses when those languages are selected
+  // Language-aware: Returns responses in selected language
   const generateResponse = useCallback((intent: VoiceIntent, params: any): string => {
     const langBase = getLanguageBase(commandLanguage);
     const isTeluguMode = langBase === 'te';
     const isHindiMode = langBase === 'hi';
+    const isTamilMode = langBase === 'ta';
+    const isKannadaMode = langBase === 'kn';
+    const isMalayalamMode = langBase === 'ml';
+    const isBengaliMode = langBase === 'bn';
     
-    // Check if text contains Telugu/Hindi script (non-ASCII Indian language characters)
+    // Check if text contains various Indian language scripts
     const isTeluguText = (text: string): boolean => /[\u0C00-\u0C7F]/.test(text);
     const isHindiText = (text: string): boolean => /[\u0900-\u097F]/.test(text);
-    const isIndianLanguageText = (text: string): boolean => isTeluguText(text) || isHindiText(text);
+    const isTamilText = (text: string): boolean => /[\u0B80-\u0BFF]/.test(text);
+    const isKannadaText = (text: string): boolean => /[\u0C80-\u0CFF]/.test(text);
+    const isMalayalamText = (text: string): boolean => /[\u0D00-\u0D7F]/.test(text);
+    const isBengaliText = (text: string): boolean => /[\u0980-\u09FF]/.test(text);
+    const isIndianLanguageText = (text: string): boolean => 
+      isTeluguText(text) || isHindiText(text) || isTamilText(text) || 
+      isKannadaText(text) || isMalayalamText(text) || isBengaliText(text);
     
     // Get appropriate response template based on language
     // Only use localized template if:
@@ -524,27 +1212,45 @@ export const useVoiceCommands = ({
       const dataInTargetLang = data ? (
         (isTeluguMode && isTeluguText(data)) ||
         (isHindiMode && isHindiText(data)) ||
+        (isTamilMode && isTamilText(data)) ||
+        (isKannadaMode && isKannadaText(data)) ||
+        (isMalayalamMode && isMalayalamText(data)) ||
+        (isBengaliMode && isBengaliText(data)) ||
         isIndianLanguageText(data) // Data is already translated
       ) : true; // No data means static message, always localize
       
+      // Telugu responses
       if (isTeluguMode && TELUGU_RESPONSES[intentKey] && dataInTargetLang) {
         return data ? TELUGU_RESPONSES[intentKey].withData(data) : TELUGU_RESPONSES[intentKey].noData;
       }
+      // Hindi responses
       if (isHindiMode && HINDI_RESPONSES[intentKey] && dataInTargetLang) {
         return data ? HINDI_RESPONSES[intentKey].withData(data) : HINDI_RESPONSES[intentKey].noData;
       }
+      // Tamil responses
+      if (isTamilMode && TAMIL_RESPONSES[intentKey] && dataInTargetLang) {
+        return data ? TAMIL_RESPONSES[intentKey].withData(data) : TAMIL_RESPONSES[intentKey].noData;
+      }
+      // Kannada responses
+      if (isKannadaMode && KANNADA_RESPONSES[intentKey] && dataInTargetLang) {
+        return data ? KANNADA_RESPONSES[intentKey].withData(data) : KANNADA_RESPONSES[intentKey].noData;
+      }
+      // Malayalam responses
+      if (isMalayalamMode && MALAYALAM_RESPONSES[intentKey] && dataInTargetLang) {
+        return data ? MALAYALAM_RESPONSES[intentKey].withData(data) : MALAYALAM_RESPONSES[intentKey].noData;
+      }
+      // Bengali responses
+      if (isBengaliMode && BENGALI_RESPONSES[intentKey] && dataInTargetLang) {
+        return data ? BENGALI_RESPONSES[intentKey].withData(data) : BENGALI_RESPONSES[intentKey].noData;
+      }
       
-      // If user wants Telugu/Hindi but data is in English, 
+      // If user wants Indian language but data is in English, 
       // return just the data (without mixing languages awkwardly)
-      if ((isTeluguMode || isHindiMode) && data && !dataInTargetLang) {
-        // Use noData template (pure Telugu/Hindi) followed by the English data
+      const isIndianLangMode = isTeluguMode || isHindiMode || isTamilMode || isKannadaMode || isMalayalamMode || isBengaliMode;
+      if (isIndianLangMode && data && !dataInTargetLang) {
+        // Just speak the English data, TTS will handle it
         // This avoids weird mixing like "ఇదిగో సారాంశం: This is an English summary"
-        if (isTeluguMode && TELUGU_RESPONSES[intentKey]) {
-          return data; // Just speak the English data, TTS will handle it
-        }
-        if (isHindiMode && HINDI_RESPONSES[intentKey]) {
-          return data;
-        }
+        return data;
       }
       
       return ''; // Return empty to use English fallback
@@ -620,7 +1326,7 @@ export const useVoiceCommands = ({
         return getLocalizedResponse('STOP') || "Okay, stopping.";
 
       case 'HELP':
-        return getLocalizedResponse('HELP') || "You can speak in English, Telugu, Hindi, or Tamil! Try saying: Read the summary, What are the deadlines, Key information, Warnings, Download PDF, Share, or Stop. In Telugu, say: సారాంశం చదవండి. In Hindi, say: सारांश पढ़ो.";
+        return getLocalizedResponse('HELP') || "You can speak in English, Telugu, Hindi, Tamil, Kannada, Malayalam, or Bengali! Try saying: Read the summary, What are the deadlines, Key information, Warnings, Download PDF, Share, or Stop.";
 
       case 'REPEAT':
         if (lastResponseRef.current) {
@@ -638,7 +1344,18 @@ export const useVoiceCommands = ({
         if (extractedText) {
           // Return first 500 chars to avoid very long speech
           const preview = extractedText.substring(0, 500);
-          const suffix = extractedText.length > 500 ? (isTeluguMode ? '... డాక్యుమెంట్ మరింత కొనసాగుతుంది.' : isHindiMode ? '... दस्तावेज़ आगे जारी है।' : '... The document continues further.') : '';
+          // Get language-specific suffix for truncated text
+          const getSuffix = (): string => {
+            if (extractedText.length <= 500) return '';
+            if (isTeluguMode) return '... డాక్యుమెంట్ మరింత కొనసాగుతుంది.';
+            if (isHindiMode) return '... दस्तावेज़ आगे जारी है।';
+            if (isTamilMode) return '... ஆவணம் தொடர்கிறது.';
+            if (isKannadaMode) return '... ಡಾಕ್ಯುಮೆಂಟ್ ಮುಂದುವರಿಯುತ್ತದೆ.';
+            if (isMalayalamMode) return '... ഡോക്യുമെന്റ് തുടരുന്നു.';
+            if (isBengaliMode) return '... নথি আরও চলছে।';
+            return '... The document continues further.';
+          };
+          const suffix = getSuffix();
           const localResp = getLocalizedResponse('READ_FULL', preview + suffix);
           return localResp || `Here's the document text: ${preview}${suffix}`;
         }
@@ -653,7 +1370,7 @@ export const useVoiceCommands = ({
         return getLocalizedResponse('WARNINGS') || "No warnings or concerns found in this document.";
 
       case 'UNKNOWN':
-        return getLocalizedResponse('UNKNOWN') || "Sorry, I didn't understand that. Say 'help' to hear available commands. You can speak in English, Telugu, Hindi, or Tamil.";
+        return getLocalizedResponse('UNKNOWN') || "Sorry, I didn't understand that. Say 'help' to hear available commands. You can speak in English, Telugu, Hindi, Tamil, Kannada, Malayalam, or Bengali.";
 
       default:
         return getLocalizedResponse('UNKNOWN') || "I'm not sure how to help with that.";

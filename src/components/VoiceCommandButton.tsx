@@ -37,6 +37,7 @@ const COMMAND_LANGUAGES = [
   { code: 'ta-IN', name: 'Tamil', flag: '🇮🇳', hint: 'சுருக்கம்' },
   { code: 'kn-IN', name: 'Kannada', flag: '🇮🇳', hint: 'ಸಾರಾಂಶ' },
   { code: 'ml-IN', name: 'Malayalam', flag: '🇮🇳', hint: 'സംഗ്രഹം' },
+  { code: 'bn-IN', name: 'Bengali', flag: '🇮🇳', hint: 'সারসংক্ষেপ' },
 ];
 
 interface VoiceCommandButtonProps {
@@ -73,6 +74,8 @@ const QUICK_HINTS: Record<string, { text: string; meaning: string }[]> = {
     { text: 'Deadlines', meaning: 'Get dates' },
     { text: 'Key info', meaning: 'Important points' },
     { text: 'Warnings', meaning: 'Problems' },
+    { text: 'Download', meaning: 'Save PDF' },
+    { text: 'Share', meaning: 'Share doc' },
     { text: 'Stop', meaning: 'Stop speaking' },
     { text: 'Help', meaning: 'All commands' },
   ],
@@ -81,6 +84,8 @@ const QUICK_HINTS: Record<string, { text: string; meaning: string }[]> = {
     { text: 'గడువు', meaning: 'Deadlines' },
     { text: 'ముఖ్యమైన', meaning: 'Key info' },
     { text: 'హెచ్చరికలు', meaning: 'Warnings' },
+    { text: 'డౌన్‌లోడ్', meaning: 'Download' },
+    { text: 'పంచుకో', meaning: 'Share' },
     { text: 'ఆపు', meaning: 'Stop' },
     { text: 'సహాయం', meaning: 'Help' },
   ],
@@ -89,14 +94,18 @@ const QUICK_HINTS: Record<string, { text: string; meaning: string }[]> = {
     { text: 'तारीख', meaning: 'Deadlines' },
     { text: 'जानकारी', meaning: 'Key info' },
     { text: 'चेतावनी', meaning: 'Warnings' },
+    { text: 'डाउनलोड', meaning: 'Download' },
+    { text: 'शेयर', meaning: 'Share' },
     { text: 'रुको', meaning: 'Stop' },
     { text: 'मदद', meaning: 'Help' },
   ],
   'ta-IN': [
     { text: 'சுருக்கம்', meaning: 'Summary' },
-    { text: 'தேதி', meaning: 'Deadlines' },
-    { text: 'தகவல்', meaning: 'Key info' },
+    { text: 'காலக்கெடு', meaning: 'Deadlines' },
+    { text: 'முக்கியம்', meaning: 'Key info' },
     { text: 'எச்சரிக்கை', meaning: 'Warnings' },
+    { text: 'பதிவிறக்கம்', meaning: 'Download' },
+    { text: 'பகிர்', meaning: 'Share' },
     { text: 'நிறுத்து', meaning: 'Stop' },
     { text: 'உதவி', meaning: 'Help' },
   ],
@@ -105,6 +114,8 @@ const QUICK_HINTS: Record<string, { text: string; meaning: string }[]> = {
     { text: 'ಗಡುವು', meaning: 'Deadlines' },
     { text: 'ಮಾಹಿತಿ', meaning: 'Key info' },
     { text: 'ಎಚ್ಚರಿಕೆ', meaning: 'Warnings' },
+    { text: 'ಡೌನ್‌ಲೋಡ್', meaning: 'Download' },
+    { text: 'ಹಂಚು', meaning: 'Share' },
     { text: 'ನಿಲ್ಲಿಸು', meaning: 'Stop' },
     { text: 'ಸಹಾಯ', meaning: 'Help' },
   ],
@@ -113,8 +124,20 @@ const QUICK_HINTS: Record<string, { text: string; meaning: string }[]> = {
     { text: 'തീയതി', meaning: 'Deadlines' },
     { text: 'വിവരങ്ങൾ', meaning: 'Key info' },
     { text: 'മുന്നറിയിപ്പ്', meaning: 'Warnings' },
+    { text: 'ഡൗൺലോഡ്', meaning: 'Download' },
+    { text: 'പങ്കിടുക', meaning: 'Share' },
     { text: 'നിർത്തുക', meaning: 'Stop' },
     { text: 'സഹായം', meaning: 'Help' },
+  ],
+  'bn-IN': [
+    { text: 'সারসংক্ষেপ', meaning: 'Summary' },
+    { text: 'সময়সীমা', meaning: 'Deadlines' },
+    { text: 'তথ্য', meaning: 'Key info' },
+    { text: 'সতর্কতা', meaning: 'Warnings' },
+    { text: 'ডাউনলোড', meaning: 'Download' },
+    { text: 'শেয়ার', meaning: 'Share' },
+    { text: 'থামো', meaning: 'Stop' },
+    { text: 'সাহায্য', meaning: 'Help' },
   ],
 };
 
@@ -344,14 +367,17 @@ const VoiceCommandButton = ({
             </div>
             
             <p className="text-xs text-muted-foreground mb-2">
-              Speak in English, Telugu, Hindi, or Tamil:
+              Speak in any of these languages:
             </p>
             
-            <div className="flex gap-1 mb-2">
+            <div className="flex flex-wrap gap-1 mb-2">
               <Badge variant="outline" className="text-[10px]">🇬🇧 English</Badge>
               <Badge variant="outline" className="text-[10px]">🇮🇳 తెలుగు</Badge>
               <Badge variant="outline" className="text-[10px]">🇮🇳 हिंदी</Badge>
               <Badge variant="outline" className="text-[10px]">🇮🇳 தமிழ்</Badge>
+              <Badge variant="outline" className="text-[10px]">🇮🇳 ಕನ್ನಡ</Badge>
+              <Badge variant="outline" className="text-[10px]">🇮🇳 മലയാളം</Badge>
+              <Badge variant="outline" className="text-[10px]">🇮🇳 বাংলা</Badge>
             </div>
 
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
