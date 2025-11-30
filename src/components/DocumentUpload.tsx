@@ -5,13 +5,20 @@ import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileText, Image as ImageIcon, Loader2, Camera } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Upload, FileText, Image as ImageIcon, Loader2, Camera, ScanLine, ChevronDown } from "lucide-react";
 import { processDocument } from "@/lib/documentProcessor";
 import { detectDocumentType } from "@/lib/documentTypeDetector";
 import { analyzeDocumentHybrid } from "@/lib/hybridAnalyzer";
 import { AIAnalysis } from "@/integrations/supabase/types";
 import { Session } from "@supabase/supabase-js";
 import CameraCapture from "@/components/CameraCapture";
+import SmartDocumentScanner from "@/components/SmartDocumentScanner";
 
 interface DocumentUploadProps {
   onTextExtracted: (text: string, documentType: string, analysis?: AIAnalysis) => void;
@@ -29,6 +36,7 @@ interface FileProgress {
 const DocumentUpload = ({ onTextExtracted, isProcessing, setIsProcessing }: DocumentUploadProps) => {
   const [filesProgress, setFilesProgress] = useState<FileProgress[]>([]);
   const [cameraOpen, setCameraOpen] = useState(false);
+  const [smartScannerOpen, setSmartScannerOpen] = useState(false);
   const { toast } = useToast();
   const filesProgressLengthRef = useRef(0);
 
@@ -227,6 +235,12 @@ const DocumentUpload = ({ onTextExtracted, isProcessing, setIsProcessing }: Docu
     onDrop([file]);
   }, [onDrop]);
 
+  // Handle smart scanner capture
+  const handleSmartScannerCapture = useCallback((file: File) => {
+    setSmartScannerOpen(false);
+    onDrop([file]);
+  }, [onDrop]);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
@@ -307,17 +321,40 @@ const DocumentUpload = ({ onTextExtracted, isProcessing, setIsProcessing }: Docu
                   <Upload className="h-4 w-4 mr-2" />
                   Select Files
                 </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCameraOpen(true);
-                  }}
-                  className="gap-2"
-                >
-                  <Camera className="h-4 w-4" />
-                  Scan Document
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      onClick={(e) => e.stopPropagation()}
+                      className="gap-2"
+                    >
+                      <Camera className="h-4 w-4" />
+                      Scan
+                      <ChevronDown className="h-3 w-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSmartScannerOpen(true);
+                      }}
+                    >
+                      <ScanLine className="h-4 w-4 mr-2" />
+                      Smart Scanner
+                      <span className="ml-auto text-xs text-muted-foreground">Recommended</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCameraOpen(true);
+                      }}
+                    >
+                      <Camera className="h-4 w-4 mr-2" />
+                      Quick Capture
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </>
           )}
@@ -329,6 +366,14 @@ const DocumentUpload = ({ onTextExtracted, isProcessing, setIsProcessing }: Docu
         open={cameraOpen}
         onOpenChange={setCameraOpen}
         onCapture={handleCameraCapture}
+        isProcessing={isProcessing}
+      />
+
+      {/* Smart Document Scanner Dialog */}
+      <SmartDocumentScanner
+        open={smartScannerOpen}
+        onOpenChange={setSmartScannerOpen}
+        onComplete={handleSmartScannerCapture}
         isProcessing={isProcessing}
       />
     </Card>
