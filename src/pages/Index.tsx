@@ -10,8 +10,9 @@ import DocumentHistory from "@/components/DocumentHistory";
 import Dashboard from "@/components/Dashboard";
 import TagManager from "@/components/TagManager";
 import SmartSearch from "@/components/SmartSearch";
+import ReminderManager from "@/components/ReminderManager";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { FileText, LogOut, History, BarChart3, Home, LayoutDashboard, Search } from "lucide-react";
+import { FileText, LogOut, History, BarChart3, Home, LayoutDashboard, Search, Bell } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { Document, AIAnalysis } from "@/integrations/supabase/types";
 
@@ -27,6 +28,7 @@ const Index = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showReminders, setShowReminders] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -148,11 +150,13 @@ const Index = () => {
               Home
             </Button>
             <Button 
-              variant={!showDashboard && !showHistory ? "default" : "ghost"} 
+              variant={!showDashboard && !showHistory && !showSearch && !showReminders ? "default" : "ghost"} 
               size="sm" 
               onClick={() => {
                 setShowDashboard(false);
                 setShowHistory(false);
+                setShowSearch(false);
+                setShowReminders(false);
               }}
             >
               <LayoutDashboard className="h-4 w-4 mr-2" />
@@ -167,11 +171,27 @@ const Index = () => {
                 if (!showSearch) {
                   setShowDashboard(false);
                   setShowHistory(false);
+                  setShowReminders(false);
                 }
               }}
             >
               <Search className="h-4 w-4 mr-2" />
               Smart Search
+            </Button>
+            <Button 
+              variant={showReminders ? "default" : "ghost"}
+              size="sm" 
+              onClick={() => {
+                setShowReminders(!showReminders);
+                if (!showReminders) {
+                  setShowDashboard(false);
+                  setShowHistory(false);
+                  setShowSearch(false);
+                }
+              }}
+            >
+              <Bell className="h-4 w-4 mr-2" />
+              Reminders
             </Button>
             <Button 
               variant={showDashboard ? "default" : "ghost"} 
@@ -180,6 +200,7 @@ const Index = () => {
                 setShowDashboard(!showDashboard);
                 setShowHistory(false);
                 setShowSearch(false);
+                setShowReminders(false);
               }}
             >
               <BarChart3 className="h-4 w-4 mr-2" />
@@ -192,6 +213,7 @@ const Index = () => {
                 setShowHistory(!showHistory);
                 setShowDashboard(false);
                 setShowSearch(false);
+                setShowReminders(false);
               }}
             >
               <History className="h-4 w-4 mr-2" />
@@ -208,8 +230,8 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-6">
-          {/* Welcome Section - Hide when viewing History or Analytics or Search */}
-          {!showHistory && !showDashboard && !showSearch && (
+          {/* Welcome Section - Hide when viewing History or Analytics or Search or Reminders */}
+          {!showHistory && !showDashboard && !showSearch && !showReminders && (
             <Card className="p-6 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
               <h2 className="text-2xl font-bold mb-2">Welcome to Document Assistant</h2>
               <p className="text-muted-foreground">
@@ -231,13 +253,18 @@ const Index = () => {
             />
           )}
 
+          {/* Reminders Section */}
+          {showReminders && (
+            <ReminderManager />
+          )}
+
           {/* Dashboard Section */}
           {showDashboard && documents.length > 0 && (
             <Dashboard documents={documents} />
           )}
 
-          {/* Upload Section - Hide when viewing History or Analytics or Search */}
-          {!showDashboard && !showHistory && !showSearch && (
+          {/* Upload Section - Hide when viewing History or Analytics or Search or Reminders */}
+          {!showDashboard && !showHistory && !showSearch && !showReminders && (
             <DocumentUpload
               onTextExtracted={handleTextExtracted}
               isProcessing={isProcessing}
@@ -257,7 +284,7 @@ const Index = () => {
           )}
 
           {/* Results Section */}
-          {extractedText && !showDashboard && !showHistory && !showSearch && (
+          {extractedText && !showDashboard && !showHistory && !showSearch && !showReminders && (
             <ExtractedTextDisplay
               text={extractedText}
               documentType={documentType}
