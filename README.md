@@ -1,73 +1,141 @@
-# Welcome to your Lovable project
+# 🎙️ DocVox - Voice-Enabled Document Assistant
 
-## Project info
+**Repository:** https://github.com/NithinRegidi/DocVox.git
 
-**URL**: https://lovable.dev/projects/f18b2cae-62e8-48a5-aa2c-11969da0d87f
+DocVox is an accessibility-focused document analysis application that helps users understand their documents through AI-powered analysis and voice interactions. Upload documents, get instant summaries, and interact using voice commands in multiple Indian languages.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## ✨ Features
 
-**Use Lovable**
+### 📄 Document Processing
+- **Multi-format Support**: PDF, Images (PNG, JPG, WEBP), Word Documents (.docx), Text files
+- **OCR Technology**: Extract text from scanned documents and images
+- **AI Analysis**: Automatic document type detection, summaries, key information extraction
+- **Smart Deadlines**: AI-detected deadlines and important dates
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f18b2cae-62e8-48a5-aa2c-11969da0d87f) and start prompting.
+### 🎤 Voice Commands (7 Languages)
+- **Supported Languages**: English, Telugu, Hindi, Tamil, Kannada, Malayalam, Bengali
+- **Voice Navigation**: Control the app hands-free with natural language
+- **Multi-dialect Support**: Understands regional variations (Hyderabadi Telugu, Mumbai Hindi, etc.)
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🔊 Text-to-Speech
+- **Native Indian Voices**: Sarvam AI integration for authentic Indian language TTS
+- **Multiple Providers**: Fallback chain - Sarvam AI → Murf AI → Google Cloud → ElevenLabs → Browser TTS
+- **Language Auto-detection**: Automatically speaks in the document's language
 
-**Use your preferred IDE**
+### 🌐 Translation
+- **20+ Languages**: Translate documents to Hindi, Telugu, Tamil, Bengali, and more
+- **Free Fallback**: Works even without API quota using MyMemory translation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 📱 Additional Features
+- **Document Sharing**: Generate shareable links for documents
+- **PDF Export**: Download analysis reports as PDFs
+- **Reminders**: Set deadline reminders with notifications
+- **Tags & Folders**: Organize documents efficiently
+- **Smart Search**: Search across all your documents
+- **Dark/Light Theme**: Comfortable viewing in any environment
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## 🛠️ Tech Stack
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+| Category | Technology |
+|----------|------------|
+| Frontend | React 18, TypeScript, Vite |
+| Styling | Tailwind CSS, shadcn/ui |
+| Backend | Supabase (Auth, Database, Storage) |
+| AI | Google Gemini API |
+| TTS | Sarvam AI, Murf AI, Google Cloud TTS, ElevenLabs |
+| Speech | Web Speech API |
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 🚀 Getting Started
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### Prerequisites
+- Node.js v18 or higher
+- npm or bun
+- Supabase account (free tier works)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/NithinRegidi/DocVox.git
+
+# Navigate to project directory
+cd DocVox
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Environment Setup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Create a `.env` file in the root directory:
 
-**Use GitHub Codespaces**
+```env
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-key
+VITE_GOOGLE_API=your-gemini-api-key
+VITE_SARVAM_API_KEY=your-sarvam-api-key (optional)
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 🎤 Voice Commands
 
-This project is built with:
+| Command | Action |
+|---------|--------|
+| "Read summary" / "సారాంశం చదవు" | Read document summary |
+| "What are the deadlines" / "గడువులు ఏమిటి" | List important dates |
+| "Key information" / "ముఖ్యమైన సమాచారం" | Read key points |
+| "Translate to Hindi" / "హిందీలో అనువదించు" | Translate document |
+| "Stop" / "ఆపు" | Stop speaking |
+| "Help" / "సహాయం" | Show available commands |
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 📁 Project Structure
 
-Simply open [Lovable](https://lovable.dev/projects/f18b2cae-62e8-48a5-aa2c-11969da0d87f) and click on Share -> Publish.
+```
+DocVox/
+├── src/
+│   ├── components/     # React components
+│   ├── hooks/          # Custom hooks (voice commands, TTS)
+│   ├── lib/            # Utilities (TTS, translation, AI)
+│   ├── pages/          # Page components
+│   └── integrations/   # Supabase integration
+├── supabase/
+│   ├── functions/      # Edge functions
+│   └── migrations/     # Database migrations
+└── public/             # Static assets
+```
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## 📖 Documentation
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- [Setup Guide](SETUP_GUIDE.md) - Complete installation instructions
+- [Testing Guide](TESTING_GUIDE.md) - Feature testing checklist
+- [Dialect Support Plan](DIALECT_SUPPORT_PLAN.md) - Regional dialect implementation
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+---
+
+**Made with ❤️ for accessibility**

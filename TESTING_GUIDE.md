@@ -1,4 +1,6 @@
-# Doc Speak Aid - Feature Testing Guide
+# DocVox - Feature Testing Guide
+
+**Repository:** https://github.com/NithinRegidi/DocVox.git
 
 Follow these steps in order to test every feature of your application.
 
@@ -134,7 +136,7 @@ Create `test.txt` with some content
 
 ## 🤖 PHASE 7: Test AI Analysis
 
-> **Note:** This requires Edge Functions deployed with LOVABLE_API_KEY
+> **Note:** This requires Edge Functions deployed with GEMINI_API_KEY
 
 ### Step 7.1: Check for AI Analysis Card
 After uploading, look for "🤖 AI Analysis" section
@@ -151,7 +153,7 @@ You see:
 
 **If AI Analysis is Missing:**
 - Edge functions not deployed, OR
-- LOVABLE_API_KEY not set
+- GEMINI_API_KEY not set
 - App still works without AI (just no smart analysis)
 
 ---
@@ -400,7 +402,7 @@ bucket_id = 'documents' AND auth.uid()::text = (storage.foldername(name))[1]
 
 ## 🎉 All Tests Passed?
 
-Congratulations! Your Doc Speak Aid application is fully functional!
+Congratulations! Your DocVox application is fully functional!
 
 **Your app now supports:**
 - ✅ Multi-format document upload (PDF, Images, Word, Text)

@@ -1,5 +1,7 @@
 # 🗣️ Regional Dialect Support - Implementation Plan
 
+**Repository:** https://github.com/NithinRegidi/DocVox.git
+
 ## Overview
 
 DocVox aims to support regional dialects across Indian languages to improve voice command recognition accuracy. This document outlines the comprehensive plan for implementing dialect-aware speech processing.

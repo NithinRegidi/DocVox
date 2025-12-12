@@ -1,4 +1,6 @@
-# Doc Speak Aid - Complete Setup Guide
+# DocVox - Complete Setup Guide
+
+**Repository:** https://github.com/NithinRegidi/DocVox.git
 
 A step-by-step guide to set up and verify your document analysis application.
 
@@ -190,7 +192,7 @@ supabase link --project-ref your-project-id
 
 ### 6.4 Set Edge Function Secrets
 ```bash
-supabase secrets set LOVABLE_API_KEY=your-api-key-here
+supabase secrets set GEMINI_API_KEY=your-gemini-api-key-here
 ```
 
 ### 6.5 Deploy Functions
@@ -217,7 +219,7 @@ npm run dev
 Open: `http://localhost:8080` (or the port shown in terminal)
 
 ### 7.3 Verify App Loads
-**Expected Result:** You should see the landing page with "Doc Speak Aid" title.
+**Expected Result:** You should see the landing page with "DocVox" title.
 
 ---
 
@@ -392,7 +394,7 @@ Use this to verify all features work:
 
 ## Success! 🎉
 
-If all tests pass, your Doc Speak Aid application is fully functional!
+If all tests pass, your DocVox application is fully functional!
 
 ### What You Can Do Now:
 1. Upload important documents
