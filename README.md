@@ -58,6 +58,30 @@ DocVox is an accessibility-focused document analysis application that helps user
 - npm or bun
 - Supabase account (free tier works)
 
+### ⚠️ Security First: Protect Your API Keys
+
+**IMPORTANT**: Never commit `.env` files with real API keys to GitHub!
+
+1. **Copy the example file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Add `.env` to `.gitignore`** (already done ✅)
+
+3. **Verify your `.gitignore` includes `.env`:**
+   ```bash
+   git rm --cached .env
+   git commit -m "Remove .env from tracking"
+   ```
+
+4. **If you accidentally committed keys:**
+   ```bash
+   # Remove file from git history
+   git filter-branch --tree-filter 'rm -f .env' HEAD
+   git push origin --force-with-lease
+   ```
+
 ### Installation
 
 ```bash
@@ -76,14 +100,28 @@ npm run dev
 
 ### Environment Setup
 
-Create a `.env` file in the root directory:
+1. **Create `.env` file** (copy from `.env.example`):
+   ```bash
+   cp .env.example .env
+   ```
 
-```env
-VITE_SUPABASE_URL=your-supabase-url
-VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-key
-VITE_GOOGLE_API=your-gemini-api-key
-VITE_SARVAM_API_KEY=your-sarvam-api-key (optional)
-```
+2. **Fill in your API keys:**
+
+| Variable | Where to Get | Required? |
+|----------|-------------|----------|
+| `VITE_SUPABASE_URL` | [Supabase Dashboard](https://app.supabase.com) | ✅ Yes |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | [Supabase Settings](https://app.supabase.com/project/_/settings/api) | ✅ Yes |
+| `VITE_GOOGLE_API` | [Google AI Studio](https://aistudio.google.com/app/apikey) | ✅ Yes |
+| `VITE_SARVAM_API_KEY` | [Sarvam AI](https://www.sarvam.ai/) | ❌ Optional |
+| `VITE_ELEVENLABS_API_KEY` | [ElevenLabs](https://elevenlabs.io/) | ❌ Optional |
+| `VITE_MURF_API_KEY` | [Murf AI](https://www.murf.ai/) | ❌ Optional |
+| `VITE_OPENAI_API_KEY` | [OpenAI](https://platform.openai.com/api-keys) | ❌ Optional |
+| `VITE_GITHUB_TOKEN` | [GitHub Settings](https://github.com/settings/tokens) | ❌ Optional |
+
+3. **Do NOT commit `.env` file:**
+   - `.env` is in `.gitignore` ✅
+   - Only commit `.env.example`
+   - Each developer creates their own `.env` locally
 
 ---
 
